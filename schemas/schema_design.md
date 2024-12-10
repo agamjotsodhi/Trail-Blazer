@@ -31,12 +31,12 @@ The following is how the database will be organized using the Crow's foot notati
 ### Destinations:
 - **Primary Key**: `destination_id`
 - **Foreign Key**: `trip_id` (relates to Trips)
-- **Attributes**: `country`, `city`, `latitude`, `longitude`
+- **Attributes**: `country`, `city`, `languages`, `currency`
 
 ### Activities:
 - **Primary Key**: `activity_id`
 - **Foreign Key**: `destination_id` (relates to Destinations)
-- **Attributes**: `activity_name`, `description`, `rating`
+- **Attributes**: `activity_name`, `description`, 
 
 ### Weather:
 - **Primary Key**: `weather_id`
