@@ -16,7 +16,7 @@ Trail Blazer is a travel planning web application that helps users make customiz
   - Geographical coordinates
 - **Base URL**: `https://restcountries.com/v3.1/`
 
-### OpenWeatherMap API
+### Weather API
 
 - **Description**: Provides weather data (in JSON format).
 
@@ -24,7 +24,7 @@ Trail Blazer is a travel planning web application that helps users make customiz
   - Current temperature
   - Weather conditions
   - Forecasts
-- **Base URL**: `https://api.openweathermap.org/data/2.5/`
+- **Base URL**: `https://www.visualcrossing.com/weather-api`
 
 ### OpenAI GPT-3.5 API (Potential Use)
 
