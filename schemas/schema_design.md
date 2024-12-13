@@ -34,7 +34,7 @@
 ### Activities:
 - **Primary Key**: `activity_id`
 - **Foreign Key**: `destination_id` (relates to Destinations)
-- **Attributes**: `activity_name`, `description`, `rating`
+- **Attributes**: `activity_name`, `description`, 
 
 ### Weather:
 - **Primary Key**: `weather_id`

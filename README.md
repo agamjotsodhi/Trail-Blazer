@@ -8,7 +8,7 @@ Trail Blazer is a travel planning web application that helps users make customiz
 
 - **Description**: Provides data about countries (in JSON format).
 
-- **Relevant Fields**:
+- **Main Data Points**:
   - Country name
   - Capital
   - Population
@@ -20,7 +20,7 @@ Trail Blazer is a travel planning web application that helps users make customiz
 
 - **Description**: Provides weather data (in JSON format).
 
-- **Relevant Fields**:
+- **Main Data Points**:
   - Current temperature
   - Weather conditions
   - Forecasts
