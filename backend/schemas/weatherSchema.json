@@ -1,0 +1,12 @@
+{
+    "type": "object",
+    "required": ["location_type", "start_date", "end_date", "icon"],
+    "properties": {
+      "location_type": { "type": "string", "enum": ["start", "end"] },
+      "start_date": { "type": "string", "format": "date" },
+      "end_date": { "type": "string", "format": "date" },
+      "icon": { "type": "string", "minLength": 1 }
+    },
+    "additionalProperties": false
+  }
+  

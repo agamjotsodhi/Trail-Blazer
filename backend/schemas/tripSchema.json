@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "required": [
+      "trip_name",
+      "start_date",
+      "end_date",
+      "start_city",
+      "end_city",
+      "start_country",
+      "end_country"
+    ],
+    "properties": {
+      "trip_name": { "type": "string", "minLength": 1 },
+      "start_date": { "type": "string", "format": "date" },
+      "end_date": { "type": "string", "format": "date" },
+      "start_city": { "type": "string", "minLength": 1 },
+      "end_city": { "type": "string", "minLength": 1 },
+      "start_country": { "type": "string", "minLength": 1 },
+      "end_country": { "type": "string", "minLength": 1 }
+    },
+    "additionalProperties": false
+  }
+  

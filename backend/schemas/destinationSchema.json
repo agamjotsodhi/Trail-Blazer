@@ -1,0 +1,25 @@
+{
+    "type": "object",
+    "required": [
+      "country",
+      "city",
+      "capital_city",
+      "currency",
+      "language",
+      "timezones",
+      "flag",
+      "start_of_week"
+    ],
+    "properties": {
+      "country": { "type": "string", "minLength": 1 },
+      "city": { "type": "string", "minLength": 1 },
+      "capital_city": { "type": "string", "minLength": 1 },
+      "currency": { "type": "string", "minLength": 1 },
+      "language": { "type": "string", "minLength": 1 },
+      "timezones": { "type": "string", "minLength": 1 },
+      "flag": { "type": "string", "minLength": 1 },
+      "start_of_week": { "type": "string", "enum": ["Sunday", "Monday"] }
+    },
+    "additionalProperties": false
+  }
+  
