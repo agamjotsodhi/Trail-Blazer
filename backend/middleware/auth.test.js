@@ -1,3 +1,5 @@
+// auth.js TEST file
+
 "use strict";
 
 const jwt = require("jsonwebtoken");

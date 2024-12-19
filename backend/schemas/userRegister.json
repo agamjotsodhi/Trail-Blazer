@@ -3,28 +3,11 @@
   "$id": "http://example.com/userRegister.json",
   "type": "object",
   "properties": {
-    "username": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 30
-    },
-    "password": {
-      "type": "string",
-      "minLength": 5,
-      "maxLength": 20
-    },
-    "first_name": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 30
-    },
-    "email": {
-      "type": "string",
-      "format": "email",
-      "minLength": 6,
-      "maxLength": 60
-    }
+    "username": { "type": "string" },
+    "password": { "type": "string" },
+    "first_name": { "type": "string" },
+    "email": { "type": "string", "format": "email" }
   },
-  "required": ["username", "first_name", "password", "email"],
+  "required": ["username", "password", "first_name", "email"],
   "additionalProperties": false
 }

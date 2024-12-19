@@ -6,7 +6,7 @@ CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL CHECK (position('@' IN email) > 0),
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
     first_name TEXT NOT NULL
 );
 

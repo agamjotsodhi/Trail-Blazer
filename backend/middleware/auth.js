@@ -1,8 +1,7 @@
-// Authentication
-
+// Authentication for trailblazer
 "use strict";
 
-/** Convenience middleware to handle common auth cases in routes. */
+// a authentication middleware to help manage auth cases throughout routes 
 
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
@@ -26,6 +25,7 @@ function authenticateJWT(req, res, next) {
     }
     return next();
   } catch (err) {
+    console.error("JWT authentication failed:", err.message); // error marker incase if fails
     return next();
   }
 }
