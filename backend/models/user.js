@@ -7,7 +7,6 @@ const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expres
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
 
 /** Related functions for users. */
-
 class User {
   /**
    * Authenticate user with username and password.
@@ -31,10 +30,9 @@ class User {
     const user = result.rows[0];
 
     if (user) {
-      // Compare hashed password to a new hash from input password
       const isValid = await bcrypt.compare(password, user.password);
       if (isValid) {
-        delete user.password; // Remove password from the returned object
+        delete user.password; // Remove password before returning the user
         return user;
       }
     }
@@ -71,27 +69,7 @@ class User {
       [username, email, hashedPassword, first_name]
     );
 
-    const user = result.rows[0];
-
-    return user;
-  }
-
-  /**
-   * Find all users.
-   *
-   * Returns [{ user_id, username, email, first_name }, ...]
-   */
-  static async findAll() {
-    const result = await db.query(
-      `SELECT user_id,
-              username,
-              email,
-              first_name
-       FROM users
-       ORDER BY username`
-    );
-
-    return result.rows;
+    return result.rows[0];
   }
 
   /**
@@ -122,13 +100,13 @@ class User {
   /**
    * Update user data with provided `data`.
    *
-   * Data can include: { username, email, password, first_name }
+   * Data can include: { first_name, email, password }
    *
    * Returns { user_id, username, email, first_name }
    *
    * Throws NotFoundError if user not found.
    */
-  static async update(user_id, data) {
+  static async update(username, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
@@ -140,13 +118,13 @@ class User {
 
     const querySql = `UPDATE users 
                       SET ${setCols} 
-                      WHERE user_id = ${userVarIdx} 
+                      WHERE username = ${userVarIdx} 
                       RETURNING user_id, username, email, first_name`;
 
-    const result = await db.query(querySql, [...values, user_id]);
+    const result = await db.query(querySql, [...values, username]);
     const user = result.rows[0];
 
-    if (!user) throw new NotFoundError(`No user: ${user_id}`);
+    if (!user) throw new NotFoundError(`No user: ${username}`);
 
     return user;
   }
@@ -167,45 +145,8 @@ class User {
       [username]
     );
 
-    const user = result.rows[0];
-
-    if (!user) throw new NotFoundError(`No user: ${username}`);
+    if (!result.rows[0]) throw new NotFoundError(`No user: ${username}`);
   }
-
-    /**
-   * Add a trip for a user.
-   *
-   * - userId: ID of the user adding the trip
-   * - tripData: { trip_name, start_date, end_date, start_city, end_city, start_country, end_country }
-   *
-   * Returns the newly added trip: { trip_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country }
-   *
-   * Throws BadRequestError if the trip already exists for the user.
-   */
-    static async addUserTrip(user_id, { trip_name, start_date, end_date, start_city, end_city, start_country, end_country }) {
-      // Check for duplicate trip names for the same user
-      const duplicateCheck = await db.query(
-        `SELECT trip_id
-         FROM trips
-         WHERE user_id = $1 AND trip_name = $2`,
-        [user_id, trip_name]
-      );
-  
-      if (duplicateCheck.rows[0]) {
-        throw new BadRequestError(`Duplicate trip name: ${trip_name}`);
-      }
-  
-      // Insert new trip into the trips table
-      const result = await db.query(
-        `INSERT INTO trips
-         (user_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         RETURNING trip_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country`,
-        [user_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country]
-      );
-  
-      return result.rows[0];
-    }
 }
 
 module.exports = User;

@@ -4,16 +4,17 @@
 "use strict";
 
 const express = require("express");
-const cors = require("cors"); 
-require("dotenv").config(); // Load environment variables from  ".env"
-const { NotFoundError } = require("./expressError"); // Loads expressError.js file for any errors
-const { authenticateJWT } = require("./middleware/auth"); 
+const cors = require("cors");
+require("dotenv").config(); // Load environment variables from ".env"
+const { NotFoundError } = require("./expressError"); // Load expressError.js for custom errors
+const { authenticateJWT } = require("./middleware/auth");
 
 // Route imports
 const authRoutes = require("./routes/auth");
 const tripsRoutes = require("./routes/trips");
 const destinationsRoutes = require("./routes/destinations");
 const weatherRoutes = require("./routes/weather");
+const userRoutes = require("./routes/users"); // Import users route
 
 // App setup
 const app = express();
@@ -28,6 +29,7 @@ app.use("/auth", authRoutes); // Authentication routes
 app.use("/trips", tripsRoutes); // Trip-related routes
 app.use("/destinations", destinationsRoutes); // Destination-related routes
 app.use("/weather", weatherRoutes); // Weather-related routes
+app.use("/users", userRoutes); // User-related routes 
 
 // Catch-all for undefined routes
 app.use(function (req, res, next) {

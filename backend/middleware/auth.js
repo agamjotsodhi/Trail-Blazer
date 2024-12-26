@@ -1,17 +1,14 @@
 // Authentication for trailblazer
 "use strict";
 
-// a authentication middleware to help manage auth cases throughout routes 
-
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 
-
 /** Middleware: Authenticate user.
  *
  * If a token was provided, verify it, and, if valid, store the token payload
- * on res.locals (this will include the username and isAdmin field.)
+ * on res.locals (this will include the username).
  *
  * It's not an error if no token was provided or if the token is not valid.
  */
@@ -25,7 +22,7 @@ function authenticateJWT(req, res, next) {
     }
     return next();
   } catch (err) {
-    console.error("JWT authentication failed:", err.message); // error marker incase if fails
+    console.error("JWT authentication failed:", err.message); // error marker in case it fails
     return next();
   }
 }
@@ -34,27 +31,9 @@ function authenticateJWT(req, res, next) {
  *
  * If not, raises Unauthorized.
  */
-
 function ensureLoggedIn(req, res, next) {
   try {
     if (!res.locals.user) throw new UnauthorizedError();
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-}
-
-
-/** Middleware to use when they be logged in as an admin user.
- *
- *  If not, raises Unauthorized.
- */
-
-function ensureAdmin(req, res, next) {
-  try {
-    if (!res.locals.user || !res.locals.user.isAdmin) {
-      throw new UnauthorizedError();
-    }
     return next();
   } catch (err) {
     return next(err);
@@ -67,10 +46,10 @@ function ensureAdmin(req, res, next) {
  *  If not, raises Unauthorized.
  */
 
-function ensureCorrectUserOrAdmin(req, res, next) {
+function ensureCorrectUser(req, res, next) {
   try {
     const user = res.locals.user;
-    if (!(user && (user.isAdmin || user.username === req.params.username))) {
+    if (!(user && user.username === req.params.username)) {
       throw new UnauthorizedError();
     }
     return next();
@@ -79,10 +58,8 @@ function ensureCorrectUserOrAdmin(req, res, next) {
   }
 }
 
-
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureAdmin,
-  ensureCorrectUserOrAdmin,
+  ensureCorrectUser,
 };

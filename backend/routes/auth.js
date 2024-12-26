@@ -35,11 +35,9 @@ const router = new express.Router();
  */
 router.post("/token", async (req, res, next) => {
   try {
-    const validator = jsonschema.validate(req.body, userAuthSchema);
+    const validator = validate(req.body, userAuthSchema);
     if (!validator.valid) {
-      throw new BadRequestError(
-        validator.errors.map((e) => e.stack)
-      );
+      throw new BadRequestError(validator.errors.map((e) => e.stack));
     }
 
     const { username, password } = req.body;
@@ -54,29 +52,27 @@ router.post("/token", async (req, res, next) => {
 /**
  * POST /auth/register
  *
- * Registers a new user and returns the user object.
+ * Registers a new user and returns the user object and a JWT token.
  *
  * Request body:
  *   { username: string, password: string, first_name: string, email: string }
  *
  * Response:
- *   { user: { user_id, username, email, first_name } }
+ *   { user: { username, first_name, email }, token: string }
  *
  * Authorization: None
  */
-
 router.post("/register", async (req, res, next) => {
   try {
-    const validation = validate(req.body, userRegisterSchema);
-    if (!validation.valid) {
-      throw new BadRequestError(
-        validation.errors.map((e) => e.stack)
-      );
+    const validator = validate(req.body, userRegisterSchema);
+    if (!validator.valid) {
+      throw new BadRequestError(validator.errors.map((e) => e.stack));
     }
 
     const { username, password, first_name, email } = req.body;
     const newUser = await User.register({ username, password, first_name, email });
-    return res.status(201).json({ user: newUser });
+    const token = createToken(newUser); // Generate token for the new user
+    return res.status(201).json({ user: newUser, token });
   } catch (err) {
     return next(err);
   }
