@@ -1,98 +1,134 @@
 "use strict";
 
 const express = require("express");
-const db = require("../db"); // Database connection
-const { authenticateJWT, ensureLoggedIn } = require("../middleware/auth"); // Import specific middleware
-const { NotFoundError } = require("../expressError");
+const { authenticateJWT, ensureLoggedIn } = require("../middleware/auth");
+const Trip = require("../models/trip");
+const { BadRequestError } = require("../expressError");
+
 const router = express.Router();
 
 /**
- * Add a new trip
+ * POST /trips
+ * Create a new trip and fetch related data (destination, weather, AI itinerary).
+ *
+ * Request Body: { trip_name, start_date, end_date, location_city, location_country, interests }
+ * Response: { trip, destination, weather, itinerary }
  */
 router.post("/", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
-    const user_id = res.locals.user.user_id; // Use res.locals.user to get user data
-    const { trip_name, start_date, end_date, start_city, end_city, start_country, end_country } = req.body;
+    const user_id = res.locals.user.user_id;
+    const { trip_name, start_date, end_date, location_city, location_country, interests } = req.body;
 
-    const result = await db.query(
-      `INSERT INTO trips 
-       (user_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING trip_id, user_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country`,
-      [user_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country]
-    );
+    if (![trip_name, location_city, location_country].every((item) => item?.trim()) || !start_date || !end_date) {
+      throw new BadRequestError("Missing required trip data.");
+    }
 
-    res.status(201).json(result.rows[0]);
+    console.log(`[Trips] Creating trip: ${trip_name} | User: ${user_id}`);
+
+    const { trip, destination, weather, itinerary } = await Trip.add(user_id, {
+      trip_name,
+      start_date,
+      end_date,
+      location_city,
+      location_country,
+      interests,
+    });
+
+    res.status(201).json({ trip, destination, weather, itinerary });
   } catch (err) {
+    console.error(`[Trips] Error creating trip: ${err.message}`);
     next(err);
   }
 });
 
 /**
- * Get all trips for a user
+ * GET /trips
+ * Retrieve all trips for the logged-in user.
+ *
+ * Response: { trips: [{ trip_id, trip_name, start_date, end_date, location_city, location_country, interests }, ...] }
  */
-router.get("/", authenticateJWT, async (req, res, next) => {
+router.get("/", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
+    console.log(`[Trips] Fetching all trips for user: ${user_id}`);
 
-    const result = await db.query(
-      `SELECT trip_id, user_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country
-       FROM trips
-       WHERE user_id = $1
-       ORDER BY start_date`,
-      [user_id]
-    );
-
-    res.json(result.rows);
+    const trips = await Trip.getAll(user_id);
+    res.json({ trips });
   } catch (err) {
+    console.error(`[Trips] Error fetching all trips: ${err.message}`);
     next(err);
   }
 });
 
 /**
- * Get a specific trip
+ * GET /trips/:trip_id
+ * Retrieve details of a specific trip, including:
+ * - Destination details
+ * - Weather forecast
+ * - AI-generated itinerary
+ *
+ * Response: { trip, destination, weather, itinerary }
  */
-router.get("/:trip_id", authenticateJWT, async (req, res, next) => {
+router.get("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
-    const trip_id = req.params.trip_id;
+    const trip_id = Number(req.params.trip_id);
 
-    const result = await db.query(
-      `SELECT trip_id, user_id, trip_name, start_date, end_date, start_city, end_city, start_country, end_country
-       FROM trips
-       WHERE trip_id = $1 AND user_id = $2`,
-      [trip_id, user_id]
-    );
+    if (!Number.isInteger(trip_id)) throw new BadRequestError("Invalid trip ID.");
 
-    const trip = result.rows[0];
-    if (!trip) throw new NotFoundError(`No trip found with ID: ${trip_id}`);
+    console.log(`[Trips] Fetching trip ID: ${trip_id} | User: ${user_id}`);
 
-    res.json(trip);
+    const tripDetails = await Trip.get(trip_id, user_id);
+    res.json(tripDetails);
   } catch (err) {
+    console.error(`[Trips] Error fetching trip details: ${err.message}`);
     next(err);
   }
 });
 
 /**
- * Delete a trip
+ * PATCH /trips/:trip_id
+ * Update an existing trip.
+ *
+ * Request Body: { trip_name, start_date, end_date, location_city, location_country, interests }
+ * Response: { updatedTrip }
  */
-router.delete("/:trip_id", authenticateJWT, async (req, res, next) => {
+router.patch("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
-    const trip_id = req.params.trip_id;
+    const trip_id = Number(req.params.trip_id);
 
-    const result = await db.query(
-      `DELETE
-       FROM trips
-       WHERE trip_id = $1 AND user_id = $2
-       RETURNING trip_id`,
-      [trip_id, user_id]
-    );
+    if (!Number.isInteger(trip_id)) throw new BadRequestError("Invalid trip ID.");
 
-    if (!result.rows[0]) throw new NotFoundError(`No trip found with ID: ${trip_id}`);
+    console.log(`[Trips] Updating trip ID: ${trip_id} | User: ${user_id}`);
 
+    const updatedTrip = await Trip.update(trip_id, user_id, req.body);
+    res.json({ updatedTrip });
+  } catch (err) {
+    console.error(`[Trips] Error updating trip: ${err.message}`);
+    next(err);
+  }
+});
+
+/**
+ * DELETE /trips/:trip_id
+ * Delete a trip.
+ *
+ * Response: { message: "Trip deleted" }
+ */
+router.delete("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
+  try {
+    const user_id = res.locals.user.user_id;
+    const trip_id = Number(req.params.trip_id);
+
+    if (!Number.isInteger(trip_id)) throw new BadRequestError("Invalid trip ID.");
+
+    console.log(`[Trips] Deleting trip ID: ${trip_id} | User: ${user_id}`);
+
+    await Trip.remove(trip_id, user_id);
     res.json({ message: "Trip deleted" });
   } catch (err) {
+    console.error(`[Trips] Error deleting trip: ${err.message}`);
     next(err);
   }
 });

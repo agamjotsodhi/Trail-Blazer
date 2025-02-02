@@ -1,23 +1,41 @@
 {
-    "type": "object",
-    "required": [
-      "trip_name",
-      "start_date",
-      "end_date",
-      "start_city",
-      "end_city",
-      "start_country",
-      "end_country"
-    ],
-    "properties": {
-      "trip_name": { "type": "string", "minLength": 1 },
-      "start_date": { "type": "string", "format": "date" },
-      "end_date": { "type": "string", "format": "date" },
-      "start_city": { "type": "string", "minLength": 1 },
-      "end_city": { "type": "string", "minLength": 1 },
-      "start_country": { "type": "string", "minLength": 1 },
-      "end_country": { "type": "string", "minLength": 1 }
+  "type": "object",
+  "required": [
+    "trip_name",
+    "start_date",
+    "end_date",
+    "location_city",
+    "location_country"
+  ],
+  "properties": {
+    "trip_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Name of the trip, must be 1-100 characters."
     },
-    "additionalProperties": false
-  }
-  
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of the trip in YYYY-MM-DD format."
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of the trip in YYYY-MM-DD format."
+    },
+    "location_city": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "City associated with the trip, must be 1-100 characters."
+    },
+    "location_country": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Country associated with the trip, must be 1-100 characters."
+    }
+  },
+  "additionalProperties": false
+}

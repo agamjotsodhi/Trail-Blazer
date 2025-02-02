@@ -9,8 +9,8 @@ CREATE DATABASE trailblazer;
 
 \i trailblazer-schema.sql
 
--- Uncomment the following line if you create a seed file:
--- \i trailblazer-seed.sql
+-- Include the seed file to populate initial data
+\i trailblazer-seed.sql
 
 \echo 'Delete and recreate trailblazer_test db?'
 \prompt 'Return for yes or control-C to cancel > ' foo
@@ -21,5 +21,5 @@ CREATE DATABASE trailblazer_test;
 
 \i trailblazer-schema.sql
 
--- Uncomment the following line if you create a seed file:
--- \i trailblazer-seed.sql
+-- Include the seed file for the test database
+\i trailblazer-seed.sql

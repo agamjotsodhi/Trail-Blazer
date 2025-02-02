@@ -1,61 +1,58 @@
-// Authentication for trailblazer
 "use strict";
 
+//authentication
+// auth.js
+// authenticates correct user by username and password
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 
-/** Middleware: Authenticate user.
+/**
+ * Middleware: Authenticate user.
  *
- * If a token was provided, verify it, and, if valid, store the token payload
- * on res.locals (this will include the username).
- *
- * It's not an error if no token was provided or if the token is not valid.
+ * If a token is provided, verify it. If valid, store the token payload
+ * (including user data) in `res.locals.user`. If invalid, log the error
+ * but do not terminate the request.
  */
-
 function authenticateJWT(req, res, next) {
   try {
-    const authHeader = req.headers && req.headers.authorization;
+    const authHeader = req.headers?.authorization; // Safely access headers
     if (authHeader) {
-      const token = authHeader.replace(/^[Bb]earer /, "").trim();
-      res.locals.user = jwt.verify(token, SECRET_KEY);
+      const token = authHeader.replace(/^Bearer\s+/i, "").trim(); // Remove 'Bearer ' prefix
+      res.locals.user = jwt.verify(token, SECRET_KEY); // Store payload in res.locals.user
     }
     return next();
   } catch (err) {
-    console.error("JWT authentication failed:", err.message); // error marker in case it fails
-    return next();
+    console.error("JWT authentication failed:", err.message);
+    return res.status(401).json({ error: "Invalid or missing token" });
   }
 }
 
-/** Middleware to use when they must be logged in.
+/**
+ * Middleware: Ensure the user is logged in.
  *
- * If not, raises Unauthorized.
+ * If `res.locals.user` is not set, raise UnauthorizedError.
  */
 function ensureLoggedIn(req, res, next) {
-  try {
-    if (!res.locals.user) throw new UnauthorizedError();
-    return next();
-  } catch (err) {
-    return next(err);
+  if (!res.locals.user) {
+    console.warn("User not logged in.");
+    return next(new UnauthorizedError("User must be logged in"));
   }
+  return next();
 }
 
-/** Middleware to use when they must provide a valid token & be user matching
- *  username provided as route param.
+/**
+ * Middleware: Ensure the correct user is accessing the resource.
  *
- *  If not, raises Unauthorized.
+ * Checks that the logged-in user's username matches the username
+ * provided in the route params.
  */
-
 function ensureCorrectUser(req, res, next) {
-  try {
-    const user = res.locals.user;
-    if (!(user && user.username === req.params.username)) {
-      throw new UnauthorizedError();
-    }
-    return next();
-  } catch (err) {
-    return next(err);
+  const user = res.locals.user;
+  if (!user || user.username !== req.params.username) {
+    return next(new UnauthorizedError("You are not authorized to access this resource"));
   }
+  return next();
 }
 
 module.exports = {

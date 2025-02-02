@@ -1,130 +1,108 @@
 "use strict";
 
 const db = require("../db");
-const { NotFoundError, BadRequestError } = require("../expressError");
-
-/** Related functions for weather data. */
+const { fetchWeatherData } = require("../helpers/weatherAPI");
+const { BadRequestError, NotFoundError } = require("../expressError");
 
 class Weather {
   /**
-   * Add weather data for a trip.
+   * Fetch and store weather data for a trip.
    *
-   * - trip_id: ID of the trip
-   * - weatherData: { location_type, start_date, end_date, icon }
-   *
-   * Returns { weather_id, trip_id, location_type, start_date, end_date, icon }
+   * @param {number} trip_id - The trip ID.
+   * @param {object} params - { location_city, start_date, end_date }
+   * @returns {Array<object>} - Stored weather records.
    */
-  static async add(trip_id, { location_type, start_date, end_date, icon }) {
-    const result = await db.query(
-      `INSERT INTO weather
-       (trip_id, location_type, start_date, end_date, icon)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING weather_id, trip_id, location_type, start_date, end_date, icon`,
-      [trip_id, location_type, start_date, end_date, icon]
+  static async add(trip_id, { location_city, start_date, end_date }) {
+    if (!trip_id || !location_city || !start_date || !end_date) {
+      throw new BadRequestError("Trip ID, city name, start date, and end date are required.");
+    }
+
+    console.log(`[Weather] Fetching data for ${location_city} (${start_date} - ${end_date})`);
+
+    // Fetch weather data from API
+    const weatherData = await fetchWeatherData(location_city, start_date, end_date);
+    if (!weatherData?.length) throw new BadRequestError("No valid weather data returned.");
+
+    // Insert weather records into database
+    const insertPromises = weatherData.map(day => 
+      db.query(
+        `INSERT INTO weather 
+         (trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+         RETURNING *`,
+        [
+          trip_id,
+          day.datetime,
+          day.tempmax ?? null,
+          day.tempmin ?? null,
+          day.temp ?? null,
+          day.humidity ?? null,
+          day.precip ?? null,
+          day.precipprob ?? null,
+          day.snowdepth ?? null,
+          day.windspeed ?? null,
+          day.sunrise ?? null,
+          day.sunset ?? null,
+          day.conditions ?? null,
+          day.description ?? null,
+          day.icon ?? null,
+        ]
+      )
     );
 
-    return result.rows[0];
+    const results = await Promise.all(insertPromises);
+    console.log(`[Weather] Stored ${results.length} records for Trip ID: ${trip_id}`);
+
+    return results.map(res => res.rows[0]);
   }
 
   /**
-   * Get all weather records for a specific trip.
+   * Retrieve all weather records for a specific trip.
    *
-   * - trip_id: ID of the trip
-   *
-   * Returns [{ weather_id, trip_id, location_type, start_date, end_date, icon }, ...]
+   * @param {number} trip_id - The trip ID.
+   * @returns {Array<object>} - List of weather records.
    */
   static async getAllForTrip(trip_id) {
     const result = await db.query(
-      `SELECT weather_id, trip_id, location_type, start_date, end_date, icon
-       FROM weather
-       WHERE trip_id = $1
-       ORDER BY location_type`,
+      `SELECT * FROM weather WHERE trip_id = $1 ORDER BY datetime ASC`,
       [trip_id]
     );
+
+    if (!result.rows.length) throw new NotFoundError(`No weather records found for Trip ID: ${trip_id}`);
 
     return result.rows;
   }
 
   /**
-   * Get specific weather data by ID.
+   * Retrieve a specific weather record by its ID.
    *
-   * - weather_id: ID of the weather record
-   *
-   * Returns { weather_id, trip_id, location_type, start_date, end_date, icon }
-   *
-   * Throws NotFoundError if weather record not found.
+   * @param {number} weather_id - The weather record ID.
+   * @returns {object} - The weather record.
    */
   static async get(weather_id) {
     const result = await db.query(
-      `SELECT weather_id, trip_id, location_type, start_date, end_date, icon
-       FROM weather
-       WHERE weather_id = $1`,
+      `SELECT * FROM weather WHERE weather_id = $1`,
       [weather_id]
     );
 
-    const weather = result.rows[0];
+    if (!result.rows.length) throw new NotFoundError(`No weather record found with ID: ${weather_id}`);
 
-    if (!weather) {
-      throw new NotFoundError(`No weather record found with ID: ${weather_id}`);
-    }
-
-    return weather;
+    return result.rows[0];
   }
 
   /**
-   * Update weather data for a specific record.
+   * Safely fetch and store weather data (handles API failures).
    *
-   * - weather_id: ID of the weather record to update
-   * - data: { location_type, start_date, end_date, icon }
-   *
-   * Returns { weather_id, trip_id, location_type, start_date, end_date, icon }
-   *
-   * Throws NotFoundError if weather record not found.
+   * @param {number} trip_id - The trip ID.
+   * @param {object} params - { location_city, start_date, end_date }
+   * @returns {Array<object> | object} - Stored weather records or error message.
    */
-  static async update(weather_id, data) {
-    const { setCols, values } = sqlForPartialUpdate(data, {
-      location_type: "location_type",
-      start_date: "start_date",
-      end_date: "end_date",
-      icon: "icon",
-    });
-    const weatherIdVarIdx = `$${values.length + 1}`;
-
-    const querySql = `UPDATE weather
-                      SET ${setCols}
-                      WHERE weather_id = ${weatherIdVarIdx}
-                      RETURNING weather_id, trip_id, location_type, start_date, end_date, icon`;
-
-    const result = await db.query(querySql, [...values, weather_id]);
-    const weather = result.rows[0];
-
-    if (!weather) {
-      throw new NotFoundError(`No weather record found with ID: ${weather_id}`);
-    }
-
-    return weather;
-  }
-
-  /**
-   * Delete weather data.
-   *
-   * - weather_id: ID of the weather record to delete
-   *
-   * Returns undefined.
-   *
-   * Throws NotFoundError if weather record not found.
-   */
-  static async remove(weather_id) {
-    const result = await db.query(
-      `DELETE
-       FROM weather
-       WHERE weather_id = $1
-       RETURNING weather_id`,
-      [weather_id]
-    );
-
-    if (!result.rows[0]) {
-      throw new NotFoundError(`No weather record found with ID: ${weather_id}`);
+  static async fetchWeatherDataSafely(trip_id, params) {
+    try {
+      return await this.add(trip_id, params);
+    } catch (err) {
+      console.error(`[Weather] Error fetching data: ${err.message}`);
+      return { message: "Unable to fetch weather data for this trip." };
     }
   }
 }

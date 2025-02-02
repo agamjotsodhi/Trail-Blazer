@@ -1,25 +1,51 @@
 {
-    "type": "object",
-    "required": [
-      "country",
-      "city",
-      "capital_city",
-      "currency",
-      "language",
-      "timezones",
-      "flag",
-      "start_of_week"
-    ],
-    "properties": {
-      "country": { "type": "string", "minLength": 1 },
-      "city": { "type": "string", "minLength": 1 },
-      "capital_city": { "type": "string", "minLength": 1 },
-      "currency": { "type": "string", "minLength": 1 },
-      "language": { "type": "string", "minLength": 1 },
-      "timezones": { "type": "string", "minLength": 1 },
-      "flag": { "type": "string", "minLength": 1 },
-      "start_of_week": { "type": "string", "enum": ["Sunday", "Monday"] }
+  "type": "object",
+  "required": [
+    "country",
+    "common_name",
+    "official_name",
+    "flag",
+    "google_maps"
+  ],
+  "properties": {
+    "country": { "type": "string", "minLength": 1 },
+    "common_name": { "type": "string", "minLength": 1 },
+    "official_name": { "type": "string", "minLength": 1 },
+    "capital_city": { "type": "string", "minLength": 1 },
+    "independent": { "type": "boolean" },
+    "un_member": { "type": "boolean" },
+    "currencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "List of currencies (e.g., 'Canadian Dollar (CAD)')."
     },
-    "additionalProperties": false
-  }
-  
+    "languages": { 
+      "type": "array", 
+      "items": { "type": "string" }, 
+      "minItems": 1 
+    },
+    "borders": { 
+      "type": "array", 
+      "items": { "type": "string" } 
+    },
+    "region": { "type": "string", "minLength": 1 },
+    "subregion": { "type": "string", "minLength": 1 },
+    "population": { "type": "integer", "minimum": 0 },
+    "car_signs": { 
+      "type": "array", 
+      "items": { "type": "string" } 
+    },
+    "car_side": { 
+      "type": "string", 
+      "enum": ["left", "right"] 
+    },
+    "google_maps": { "type": "string", "format": "uri" },
+    "flag": { "type": "string", "minLength": 1 },
+    "start_of_week": { 
+      "type": "string", 
+      "enum": ["Sunday", "Monday"] 
+    }
+  },
+  "additionalProperties": false
+}

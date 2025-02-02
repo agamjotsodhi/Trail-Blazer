@@ -1,97 +1,74 @@
 "use strict";
 
 const express = require("express");
-const db = require("../db"); // Database connection
-const { authenticateJWT } = require("../middleware/auth"); // Import authenticateJWT
-const { NotFoundError } = require("../expressError");
+const Weather = require("../models/weather");
+const { authenticateJWT } = require("../middleware/auth");
+const { BadRequestError } = require("../expressError");
+
 const router = express.Router();
 
 /**
- * Add weather data for a trip
+ * POST /weather/:trip_id
+ * Fetch and store weather data for a trip.
+ *
+ * Request Body: { location_city, start_date, end_date }
+ * Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
  */
 router.post("/:trip_id", authenticateJWT, async (req, res, next) => {
   try {
-    const trip_id = req.params.trip_id;
-    const { location_type, start_date, end_date, icon } = req.body;
+    const trip_id = Number(req.params.trip_id);
+    const { location_city, start_date, end_date } = req.body;
 
-    const result = await db.query(
-      `INSERT INTO weather 
-       (trip_id, location_type, start_date, end_date, icon)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING weather_id, trip_id, location_type, start_date, end_date, icon`,
-      [trip_id, location_type, start_date, end_date, icon]
-    );
+    if (!trip_id || isNaN(trip_id)) throw new BadRequestError("Invalid trip ID.");
+    if (!location_city || !start_date || !end_date) {
+      throw new BadRequestError("Location, start date, and end date are required.");
+    }
 
-    res.status(201).json(result.rows[0]);
+    console.log(`[Weather Route] Fetching weather for Trip ID: ${trip_id} - ${location_city}`);
+
+    const weather = await Weather.add(trip_id, { location_city, start_date, end_date });
+
+    res.status(201).json({ weather });
   } catch (err) {
     next(err);
   }
 });
 
 /**
- * Get all weather records for a trip
+ * GET /weather/:trip_id
+ * Retrieve all weather records for a specific trip.
+ *
+ * Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
  */
 router.get("/:trip_id", authenticateJWT, async (req, res, next) => {
   try {
-    const trip_id = req.params.trip_id;
+    const trip_id = Number(req.params.trip_id);
+    if (!trip_id || isNaN(trip_id)) throw new BadRequestError("Invalid trip ID.");
 
-    const result = await db.query(
-      `SELECT weather_id, trip_id, location_type, start_date, end_date, icon
-       FROM weather
-       WHERE trip_id = $1
-       ORDER BY start_date`,
-      [trip_id]
-    );
+    console.log(`[Weather Route] Retrieving weather for Trip ID: ${trip_id}`);
 
-    res.json(result.rows);
+    const weather = await Weather.getAllForTrip(trip_id);
+    res.json({ weather });
   } catch (err) {
     next(err);
   }
 });
 
 /**
- * Get specific weather record
+ * GET /weather/details/:weather_id
+ * Retrieve a specific weather record by its ID.
+ *
+ * Response: { weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }
  */
 router.get("/details/:weather_id", authenticateJWT, async (req, res, next) => {
   try {
-    const weather_id = req.params.weather_id;
+    const weather_id = Number(req.params.weather_id);
+    if (!weather_id || isNaN(weather_id)) throw new BadRequestError("Invalid weather ID.");
 
-    const result = await db.query(
-      `SELECT weather_id, trip_id, location_type, start_date, end_date, icon
-       FROM weather
-       WHERE weather_id = $1`,
-      [weather_id]
-    );
+    console.log(`[Weather Route] Retrieving weather details for Weather ID: ${weather_id}`);
 
-    const weather = result.rows[0];
-    if (!weather) throw new NotFoundError(`No weather record found with ID: ${weather_id}`);
-
-    res.json(weather);
-  } catch (err) {
-    next(err);
-  }
-});
-
-/**
- * Update a weather record
- */
-router.patch("/:weather_id", authenticateJWT, async (req, res, next) => {
-  try {
-    const weather_id = req.params.weather_id;
-    const { location_type, start_date, end_date, icon } = req.body;
-
-    const result = await db.query(
-      `UPDATE weather
-       SET location_type = $1, start_date = $2, end_date = $3, icon = $4
-       WHERE weather_id = $5
-       RETURNING weather_id, trip_id, location_type, start_date, end_date, icon`,
-      [location_type, start_date, end_date, icon, weather_id]
-    );
-
-    const weather = result.rows[0];
-    if (!weather) throw new NotFoundError(`No weather record found with ID: ${weather_id}`);
-
-    res.json(weather);
+    const weather = await Weather.get(weather_id);
+    res.json({ weather });
   } catch (err) {
     next(err);
   }

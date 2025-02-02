@@ -1,12 +1,84 @@
 {
-    "type": "object",
-    "required": ["location_type", "start_date", "end_date", "icon"],
-    "properties": {
-      "location_type": { "type": "string", "enum": ["start", "end"] },
-      "start_date": { "type": "string", "format": "date" },
-      "end_date": { "type": "string", "format": "date" },
-      "icon": { "type": "string", "minLength": 1 }
+  "type": "object",
+  "required": [
+    "datetime",
+    "tempmax",
+    "tempmin",
+    "temp",
+    "humidity",
+    "precip",
+    "precipprob",
+    "snowdepth",
+    "windspeed",
+    "sunrise",
+    "sunset",
+    "conditions",
+    "description",
+    "icon"
+  ],
+  "properties": {
+    "datetime": { 
+      "type": "string", 
+      "format": "date",
+      "description": "Date of the weather record in YYYY-MM-DD format."
     },
-    "additionalProperties": false
-  }
-  
+    "tempmax": { 
+      "type": "number",
+      "description": "Maximum temperature (°C)."
+    },
+    "tempmin": { 
+      "type": "number",
+      "description": "Minimum temperature (°C)."
+    },
+    "temp": { 
+      "type": "number",
+      "description": "Average temperature (°C)."
+    },
+    "humidity": { 
+      "type": "number",
+      "description": "Humidity percentage."
+    },
+    "precip": { 
+      "type": "number",
+      "description": "Precipitation amount in millimeters."
+    },
+    "precipprob": { 
+      "type": "number",
+      "description": "Probability of precipitation as a percentage."
+    },
+    "snowdepth": { 
+      "type": "number",
+      "description": "Snow depth in centimeters."
+    },
+    "windspeed": { 
+      "type": "number",
+      "description": "Wind speed in kilometers per hour."
+    },
+    "sunrise": { 
+      "type": "string", 
+      "format": "time",
+      "description": "Time of sunrise in HH:MM:SS format."
+    },
+    "sunset": { 
+      "type": "string", 
+      "format": "time",
+      "description": "Time of sunset in HH:MM:SS format."
+    },
+    "conditions": { 
+      "type": "string", 
+      "minLength": 1,
+      "description": "General weather conditions (e.g., 'Rainy', 'Sunny')."
+    },
+    "description": { 
+      "type": "string", 
+      "minLength": 1,
+      "description": "Detailed description of the weather."
+    },
+    "icon": { 
+      "type": "string", 
+      "minLength": 1,
+      "description": "Weather icon identifier."
+    }
+  },
+  "additionalProperties": false
+}

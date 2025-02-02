@@ -1,7 +1,4 @@
--- TrailBlazer (TB) Database Schema
--- Structure design for the Postgres sql database TB will use
-
--- Users Table
+-- Users Table 
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -10,61 +7,64 @@ CREATE TABLE users (
     first_name TEXT NOT NULL
 );
 
--- Trips Table
--- will record user's desired trip details
--- data from start_country and end_country will be used as a param to the restcountry API request
--- data from start/end_city and start/end_date will be sent as a param to the weather API request
-
+-- Trips Table 
 CREATE TABLE trips (
     trip_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     trip_name VARCHAR(100) NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    start_city VARCHAR(100) NOT NULL, -- City user would like to start trip in
-    end_city VARCHAR(100) NOT NULL, -- City user would like to end trip in
-    start_country VARCHAR(100) NOT NULL, -- Start country 
-    end_country VARCHAR(100) NOT NULL, -- End country 
-    UNIQUE (user_id, trip_name) -- Prevents duplicate trip names for the same user
+    location_city VARCHAR(100) NOT NULL,
+    location_country VARCHAR(100) NOT NULL,
+    interests TEXT, -- User's interests
+    UNIQUE (user_id, trip_name) -- Prevents duplicate trip names per user
 );
 
+-- Itineraries Table 
+CREATE TABLE itineraries (
+    itinerary_id SERIAL PRIMARY KEY,
+    trip_id INT UNIQUE REFERENCES trips(trip_id) ON DELETE CASCADE,
+    itinerary TEXT NOT NULL -- Stores the generated trip itinerary
+);
 
--- Destinations Table
--- will be populated by restcountries - api
-
+-- Destinations Table 
 CREATE TABLE destinations (
     destination_id SERIAL PRIMARY KEY,
-    trip_id INT REFERENCES trips(trip_id) ON DELETE CASCADE, -- Linked to a trip_id - user requested location
-    country VARCHAR(100) NOT NULL,
-    city VARCHAR(100) NOT NULL,
-    capital_city VARCHAR(100),
-    currency VARCHAR(50),
-    language VARCHAR(100),
-    timezones VARCHAR(100),
-    flag TEXT, -- Will store the flag as an emoji, ex. "🇨🇦"
-    start_of_week VARCHAR(10), -- ex. 'Monday', 'Sunday'
-    UNIQUE (trip_id, country, city) -- Prevents duplicate entries for the same trip
+    common_name VARCHAR(100) NOT NULL UNIQUE, -- Common name of the country (e.g., "Canada")
+    official_name VARCHAR(100), -- Official name of the country
+    capital_city VARCHAR(100), -- Capital city
+    independent BOOLEAN, -- Is the country independent?
+    un_member BOOLEAN, -- Is the country a UN member?
+    currencies TEXT, -- List of currencies (e.g., "Canadian Dollar (CAD)")
+    alt_spellings TEXT[], -- Alternate spellings of the country
+    region VARCHAR(100), -- Geographical region
+    subregion VARCHAR(100), -- Geographical subregion
+    languages TEXT[], -- List of spoken languages
+    borders TEXT[], -- Neighboring countries
+    population INT, -- Population count
+    car_signs TEXT[], -- Car signs (e.g., "CA")
+    car_side VARCHAR(10), -- Driving side ("right" or "left")
+    google_maps TEXT, -- Google Maps link
+    flag TEXT -- Emoji or SVG of the country's flag
 );
 
--- Weather Table
--- looks at Trips table, to get user trip info for the Weather api call
--- Keeps the "icon" key from api call, as it will be used 
+-- Weather Table (References Trips, must be created after it)
 CREATE TABLE weather (
     weather_id SERIAL PRIMARY KEY,
-    trip_id INT NOT NULL REFERENCES trips(trip_id) ON DELETE CASCADE, -- Links weather to a trip
-    location_type VARCHAR(10) NOT NULL CHECK (location_type IN ('start', 'end')), -- Specifies whether it's for start or end location
-    start_date DATE NOT NULL, -- Start date of the weather range
-    end_date DATE NOT NULL, -- End date of the weather range
-    icon VARCHAR(50) -- Weather icon identifier from API call (e.g., "rain")
+    trip_id INT NOT NULL REFERENCES trips(trip_id) ON DELETE CASCADE, -- Links weather data to a trip
+    datetime DATE NOT NULL, -- Date of the weather record
+    tempmax NUMERIC(5, 2), -- Max temperature
+    tempmin NUMERIC(5, 2), -- Min temperature
+    temp NUMERIC(5, 2), -- Average temperature
+    humidity NUMERIC(5, 2), -- Humidity percentage
+    precip NUMERIC(5, 2), -- Precipitation amount
+    precipprob NUMERIC(5, 2), -- Precipitation probability percentage
+    snowdepth NUMERIC(5, 2), -- Snow depth
+    windspeed NUMERIC(5, 2), -- Wind speed
+    sunrise TIME, -- Sunrise time
+    sunset TIME, -- Sunset time
+    conditions TEXT, -- General weather conditions
+    description TEXT, -- Detailed weather description
+    icon VARCHAR(50), -- Weather icon identifier
+    UNIQUE (trip_id, datetime) -- Prevents duplicate weather entries for the same trip and date
 );
-
--- Activities Table
-CREATE TABLE activities (
-    activity_id SERIAL PRIMARY KEY,
-    destination_id INT NOT NULL REFERENCES destinations(destination_id) ON DELETE CASCADE,
-    activity_name VARCHAR(100) NOT NULL,
-    description TEXT,
-    rating NUMERIC(2, 1) CHECK (rating >= 0 AND rating <= 5)
-);
-
-    
