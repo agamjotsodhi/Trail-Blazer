@@ -1,5 +1,7 @@
 "use strict";
 
+// helpers/countriesAPI.js
+
 const axios = require("axios");
 
 const BASE_URL = "https://restcountries.com/v3.1";
@@ -11,6 +13,7 @@ const BASE_URL = "https://restcountries.com/v3.1";
  * @returns {Promise<object>} - The country's data.
  * @throws {Error} - If the country is not found or an error occurs.
  */
+
 async function getCountry(countryName) {
   if (!countryName?.trim()) {
     throw new Error("Country name is required.");
@@ -59,12 +62,13 @@ async function searchCountries(partialName) {
 }
 
 /**
- * Format country data for database insertion.
+ * Formats country data to insert into database
  * 
  * @param {object} country - Country data from the API.
  * @returns {object} - Cleaned country details.
  */
-function formatCountryDetails(country) {
+
+function prepareCountryDetails(country) {
   return {
     common_name: country.name?.common || null,
     official_name: country.name?.official || null,
@@ -87,4 +91,4 @@ function formatCountryDetails(country) {
   };
 }
 
-module.exports = { getCountry, getAllCountries, searchCountries, formatCountryDetails };
+module.exports = { getCountry, getAllCountries, searchCountries, prepareCountryDetails };

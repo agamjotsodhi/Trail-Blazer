@@ -4,7 +4,7 @@ const db = require("../db");
 const { NotFoundError, BadRequestError } = require("../expressError");
 const Destination = require("./destination");
 const Weather = require("./weather");
-const { generateGeminiItinerary } = require("../helpers/geminiAI");
+const { generateItinerary } = require("../helpers/geminiAI");
 
 const SELECT_FIELDS = `
   trip_id, user_id, trip_name, start_date, end_date, location_city, location_country, interests
@@ -22,7 +22,7 @@ class Trip {
    * @returns {object} The created trip with destination, weather, and itinerary.
    */
   static async add(user_id, { trip_name, start_date, end_date, location_city, location_country, interests }) {
-    if (!trip_name || !start_date || !end_date || !location_city || !location_country) {
+    if (!trip_name || !start_date || !end_date || !location_city || !location_country || !interests) {
       throw new BadRequestError("Missing required trip data.");
     }
 
@@ -47,7 +47,7 @@ class Trip {
     console.log(`[Trip Model] Trip created: ${trip.trip_id}`);
 
     // Fetch and store destination details
-    const destination = await Destination.fetchDestinationDataSafely(location_country);
+    const destination = await Destination.fetchDestinationSafely(location_country);
 
     // Fetch and store weather data
     const weather = await Weather.fetchWeatherDataSafely(trip.trip_id, { location_city, start_date, end_date });
@@ -55,7 +55,7 @@ class Trip {
     // Generate AI-powered itinerary
     let itinerary;
     try {
-      itinerary = await generateGeminiItinerary(location_city, location_country, interests, start_date, end_date);
+      itinerary = await generateItinerary(location_city, location_country, interests, start_date, end_date);
       console.log(`[Trip Model] AI itinerary generated successfully.`);
     } catch (err) {
       console.error(`[Trip Model] Failed to generate AI itinerary: ${err.message}`);

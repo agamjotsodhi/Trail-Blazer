@@ -1,7 +1,7 @@
 "use strict";
 
 const db = require("../db");
-const { fetchWeatherData } = require("../helpers/weatherAPI");
+const { fetchWeather } = require("../helpers/weatherAPI");
 const { BadRequestError, NotFoundError } = require("../expressError");
 
 class Weather {
@@ -20,7 +20,7 @@ class Weather {
     console.log(`[Weather] Fetching data for ${location_city} (${start_date} - ${end_date})`);
 
     // Fetch weather data from API
-    const weatherData = await fetchWeatherData(location_city, start_date, end_date);
+    const weatherData = await fetchWeather(location_city, start_date, end_date);
     if (!weatherData?.length) throw new BadRequestError("No valid weather data returned.");
 
     // Insert weather records into database
