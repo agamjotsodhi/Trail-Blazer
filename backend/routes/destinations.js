@@ -56,6 +56,32 @@ router.get("/country/:country", authenticateJWT, async (req, res, next) => {
   }
 });
 
+
+/**
+ * GET /destinations/suggestions/:query
+ * Retrieves country name suggestions based on user input.
+ *
+ * Response: { suggestions: ["Canada", "Cambodia", "Cameroon", ...] }
+ */
+router.get("/suggestions/:query", authenticateJWT, async (req, res, next) => {
+  try {
+    const { query } = req.params;
+
+    if (!query?.trim()) {
+      throw new BadRequestError("Valid search query is required.");
+    }
+
+    console.log(`[Destinations] Fetching country suggestions for: ${query.trim()}`);
+
+    const suggestions = await Destination.getCountrySuggestions(query.trim());
+    res.json({ suggestions });
+  } catch (err) {
+    console.error("[Destinations] Error fetching country suggestions:", err.message);
+    next(err);
+  }
+});
+
+
 /**
  * GET /destinations
  * Retrieve all destinations.

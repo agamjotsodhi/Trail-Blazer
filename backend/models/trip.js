@@ -5,6 +5,7 @@ const { NotFoundError, BadRequestError } = require("../expressError");
 const Destination = require("./destination");
 const Weather = require("./weather");
 const { generateItinerary } = require("../helpers/geminiAI");
+const { sqlForPartialUpdate } = require("../helpers/sql");
 
 const SELECT_FIELDS = `
   trip_id, user_id, trip_name, start_date, end_date, location_city, location_country, interests
@@ -12,14 +13,18 @@ const SELECT_FIELDS = `
 
 class Trip {
   /**
-   * Add a new trip and store associated details:
-   * - Destination info
-   * - Weather data
-   * - AI-generated itinerary (saved in `itineraries` table)
-   *
-   * @param {number} user_id - The user's ID.
-   * @param {object} tripData - { trip_name, start_date, end_date, location_city, location_country, interests }
-   * @returns {object} The created trip with destination, weather, and itinerary.
+   * ✅ Fetch all trips for a specific user.
+   */
+  static async getAll(user_id) {
+    const result = await db.query(
+      `SELECT ${SELECT_FIELDS} FROM trips WHERE user_id = $1`,
+      [user_id]
+    );
+    return result.rows;
+  }
+
+  /**
+   * ✅ Add a new trip.
    */
   static async add(user_id, { trip_name, start_date, end_date, location_city, location_country, interests }) {
     if (!trip_name || !start_date || !end_date || !location_city || !location_country || !interests) {
@@ -48,11 +53,8 @@ class Trip {
 
     // Fetch and store destination details
     const destination = await Destination.fetchDestinationSafely(location_country);
-
-    // Fetch and store weather data
     const weather = await Weather.fetchWeatherDataSafely(trip.trip_id, { location_city, start_date, end_date });
 
-    // Generate AI-powered itinerary
     let itinerary;
     try {
       itinerary = await generateItinerary(location_city, location_country, interests, start_date, end_date);
@@ -62,22 +64,13 @@ class Trip {
       itinerary = "Itinerary could not be generated.";
     }
 
-    // Store itinerary in the itineraries table
-    await db.query(
-      `INSERT INTO itineraries (trip_id, itinerary) VALUES ($1, $2)`,
-      [trip.trip_id, itinerary]
-    );
+    await db.query(`INSERT INTO itineraries (trip_id, itinerary) VALUES ($1, $2)`, [trip.trip_id, itinerary]);
 
     return { trip, destination, weather, itinerary };
   }
 
   /**
-   * Get a specific trip and its details.
-   * - Includes Destination, Weather, and Itinerary.
-   *
-   * @param {number} trip_id - The trip ID.
-   * @param {number} user_id - The user's ID.
-   * @returns {object} Trip details with related data.
+   * ✅ Get a specific trip.
    */
   static async get(trip_id, user_id) {
     const tripResult = await db.query(
@@ -90,22 +83,57 @@ class Trip {
     }
 
     const trip = tripResult.rows[0];
-
-    // Fetch related destination details
     const destination = await Destination.getByCountry(trip.location_country);
-
-    // Fetch related weather data
     const weather = await Weather.getAllForTrip(trip_id);
-
-    // Fetch itinerary
-    const itineraryResult = await db.query(
-      `SELECT itinerary FROM itineraries WHERE trip_id = $1`,
-      [trip_id]
-    );
+    const itineraryResult = await db.query(`SELECT itinerary FROM itineraries WHERE trip_id = $1`, [trip_id]);
 
     const itinerary = itineraryResult.rows.length ? itineraryResult.rows[0].itinerary : "No itinerary available.";
-
     return { trip, destination, weather, itinerary };
+  }
+
+  /**
+   * ✅ Update an existing trip.
+   */
+  static async update(trip_id, user_id, data) {
+    const { setCols, values } = sqlForPartialUpdate(data, {
+      trip_name: "trip_name",
+      start_date: "start_date",
+      end_date: "end_date",
+      location_city: "location_city",
+      location_country: "location_country",
+      interests: "interests",
+    });
+
+    const tripVarIdx = "$" + (values.length + 1);
+    const userVarIdx = "$" + (values.length + 2);
+
+    const querySql = `UPDATE trips 
+                      SET ${setCols} 
+                      WHERE trip_id = ${tripVarIdx} AND user_id = ${userVarIdx} 
+                      RETURNING ${SELECT_FIELDS}`;
+
+    const result = await db.query(querySql, [...values, trip_id, user_id]);
+    const trip = result.rows[0];
+
+    if (!trip) throw new NotFoundError(`No trip found with ID: ${trip_id}`);
+
+    return trip;
+  }
+
+  /**
+   * ✅ Delete a trip.
+   */
+  static async remove(trip_id, user_id) {
+    const result = await db.query(
+      `DELETE FROM trips WHERE trip_id = $1 AND user_id = $2 RETURNING trip_id`,
+      [trip_id, user_id]
+    );
+
+    if (!result.rows.length) {
+      throw new NotFoundError(`No trip found with ID: ${trip_id}`);
+    }
+
+    return { message: "Trip deleted" };
   }
 }
 

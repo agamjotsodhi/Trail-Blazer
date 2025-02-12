@@ -35,6 +35,7 @@ async function seedDestinations() {
           Object.values(details)
         );
 
+        // console error handling updates while adding countries
         console.log(`Inserted: ${details.common_name}`);
         successCount++;
       } catch (err) {
@@ -47,8 +48,8 @@ async function seedDestinations() {
   } catch (err) {
     console.error("Seeding failed:", err.message);
   } finally {
-    db.end(); // Close the database connection
-    process.exit(); // Exit the script
+    db.end(); 
+    process.exit(); 
   }
 }
 

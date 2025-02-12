@@ -2,6 +2,9 @@
 
 // helpers/countriesAPI.js
 
+// Handles all axios data fetching from the restcountries API
+
+
 const axios = require("axios");
 
 const BASE_URL = "https://restcountries.com/v3.1";

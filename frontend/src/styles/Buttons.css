@@ -1,0 +1,33 @@
+/* Base Button Styles */
+button {
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  outline: none;
+}
+
+/* `btn-one`: Solid Deep Yellow Button */
+.btn-one {
+  background-color: rgb(234, 186, 38); /* Deep Yellow */
+  color: white;
+  border: none;
+}
+
+.btn-one:hover {
+  background-color: rgb(218, 167, 20); /* Slightly Darker Yellow */
+}
+
+/* `btn-two`: Deep Yellow Outline with Transparent Fill */
+.btn-two {
+  background-color: transparent;
+  color: rgb(234, 186, 38); /* Deep Yellow Font */
+  border: 2px solid rgb(234, 186, 38); /* Deep Yellow Stroke */
+}
+
+.btn-two:hover {
+  background-color: rgb(234, 186, 38);
+  color: white;
+}

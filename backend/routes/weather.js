@@ -8,6 +8,13 @@ const { BadRequestError } = require("../expressError");
 const router = express.Router();
 
 /**
+ * routes/weather.js
+ * 
+ * The weather route handles  
+ */
+
+
+/**
  * POST /weather/:trip_id
  * Fetch and store weather data for a trip.
  *

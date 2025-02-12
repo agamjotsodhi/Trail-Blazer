@@ -48,9 +48,29 @@ class Destination {
     try {
       return await this.getByCountry(country);
     } catch (err) {
-      console.error("❌ [Destination] Failed to fetch destination data:", err.message);
+      console.error(" [Destination] Failed to fetch destination data:", err.message);
       return { message: "Destination details unavailable." };
     }
+  }
+
+  /**
+ * Retrieve country suggestions based on partial input.
+ * Queries the database for countries matching the input.
+ *
+ * @param {string} query - Partial country name.
+ * @returns {Promise<Array>} - List of country names.
+ */
+  static async getCountrySuggestions(query) {
+    if (!query || !query.trim()) {
+      throw new BadRequestError("Search query is required.");
+    }
+
+    const result = await db.query(
+      `SELECT DISTINCT common_name FROM destinations WHERE common_name ILIKE $1 LIMIT 10`,
+      [`${query.trim()}%`]
+    );
+
+    return result.rows.map((row) => row.common_name);
   }
 }
 
