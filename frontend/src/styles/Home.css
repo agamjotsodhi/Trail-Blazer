@@ -1,0 +1,40 @@
+/* Full-page layout */
+.home-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Keeps everything at the top */
+    background-color: rgb(238, 238, 238);
+    align-items: center;
+    padding: 20px;
+    gap: 10px; 
+}
+
+/* Title at the top-left */
+.home-title {
+    align-self: flex-start;
+    margin-left: 20px;
+    margin-top: 20px;
+    color: rgb(45, 45, 45);
+    font-size: 3rem;
+}
+
+/* Home page bus graphic */
+.home-bus {
+    align-self: center;
+    margin-top: -30px; 
+}
+
+.home-bus img {
+    width: 70%;
+    max-width: 600px;
+    height: auto;
+}
+
+
+.home-buttons {
+    display: flex;
+    gap: 20px;
+    position: absolute;
+    bottom: 65px; 
+}

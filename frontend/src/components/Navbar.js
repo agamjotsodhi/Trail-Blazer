@@ -10,7 +10,9 @@ const Navbar = ({ logOutUser }) => {
   return (
     <nav className="navbar"> {/* Main Navbar container */}
       <div className="navbar-logo">
-        <Link to="/" className="navbar-brand">Home</Link>
+        <Link to="/">
+          <img src={require("../assets/Logo.png")} alt="Trail Blazer Logo" className="navbar-logo-img" />
+        </Link>
       </div>
 
       <div className="navbar-links">

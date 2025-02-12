@@ -1,6 +1,6 @@
 import { Input, Button, Form, FormGroup, Col, Container } from "reactstrap";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import Alert from "../components/Alert"; 
 import "../styles/forms.css";
@@ -30,43 +30,39 @@ const LoginForm = ({ setTokenAfterLogin }) => {
   };
 
   return (
-    <Container className="login-form-container"> 
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormGroup row>
-          <Col md={{ offset: 3, size: 6 }} sm="12">
-            <div className="FormContainer"> 
-              <h1>Login</h1>
-
-              {/* Username Input */}
-              <div className="FormInput">
-                <label>Username</label>
-                <Controller
-                  name="username"
-                  control={control}
-                  render={({ field }) => <Input placeholder="Enter your username" {...field} required />}
-                />
-              </div>
-
-              {/* Password Input */}
-              <div className="FormInput">
-                <label>Password</label>
-                <Controller
-                  name="password"
-                  control={control}
-                  render={({ field }) => <Input type="password" placeholder="Enter your password" {...field} required />}
-                />
-              </div>
-
-              {/* Display error messages if login fails */}
-              {response && <Alert type="danger" message={response} />}
-
-              {/* Submit Button (shared styling with SignupForm) */}
-              <Button className="FormButton" type="submit" size="lg">
-                Submit
-              </Button>
-            </div>
-          </Col>
+    <Container className="form-container"> {/* Uses shared styles from forms.css */}
+      <h1 className="form-title">Login</h1> 
+      <Form onSubmit={handleSubmit(onSubmit)} className="form">
+        <FormGroup className="form-group">
+          <label>Username</label>
+          <Controller
+            name="username"
+            control={control}
+            render={({ field }) => <Input placeholder="Enter your username" {...field} required />}
+          />
         </FormGroup>
+
+        <FormGroup className="form-group">
+          <label>Password</label>
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => <Input type="password" placeholder="Enter your password" {...field} required />}
+          />
+        </FormGroup>
+
+        {/* Error message if login fails */}
+        {response && <Alert type="danger" message={response} />}
+
+        {/* Styled button */}
+        <Button className="form-button" type="submit">
+          Login
+        </Button>
+
+        {/* Page redirect text */}
+        <p className="form-redirect">
+          New to Trail Blazer? <Link to="/signup" className="link-primary">Sign up here</Link>
+        </p>
       </Form>
     </Container>
   );

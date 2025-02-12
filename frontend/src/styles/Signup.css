@@ -1,0 +1,28 @@
+/* Full-page container */
+.signup-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom, rgb(21,41,147), rgb(95,93,249));
+  }
+  
+  /* Spacing for signup redirect text */
+  .signup-redirect {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 1rem;
+    color: white;
+  }
+  
+  /* Style for "Login Here" link */
+  .link-primary {
+    color: rgb(234, 186, 38);
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .link-primary:hover {
+    text-decoration: underline;
+  }
+  

@@ -1,23 +1,30 @@
 .navbar {
-    background-color: #007bff;
+    background-color: #252525;
     padding: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
   
-  .nav-links {
+  /* Logo styling */
+.navbar-logo-img {
+  height: 50px; 
+  width: auto;
+}
+
+  .navbar-links {
     display: flex;
     gap: 15px;
+    margin-right: 30px;
   }
   
-  .nav-links a {
+  .navbar-links a {
     color: white;
     text-decoration: none;
     font-weight: bold;
   }
   
-  .nav-links a:hover {
+  .navbar-links a:hover {
     text-decoration: underline;
   }
   

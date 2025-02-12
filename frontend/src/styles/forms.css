@@ -1,34 +1,69 @@
 /* General form container */
 .form-container {
-    width: 100%;
-    max-width: 500px;
-    margin: auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Form fields */
-  .form-container input,
-  .form-container select,
-  .form-container textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  /* Labels */
-  .form-container label {
-    font-weight: bold;
-    display: block;
-    margin-top: 10px;
-  }
-  
-  /* Form spacing */
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Form title */
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Form fields */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Submit button */
+.form-button {
+  width: 100%;
+  padding: 10px;
+  background-color: rgb(234, 186, 38); 
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.form-button:hover {
+  background-color: rgb(210, 165, 30); 
+}
+
+/* Redirect link styling */
+.form-redirect {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.form-redirect a {
+  color: rgb(21,41,147); 
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.form-redirect a:hover {
+  text-decoration: underline;
+}
