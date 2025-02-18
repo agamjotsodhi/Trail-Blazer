@@ -1,13 +1,5 @@
 "use strict";
 
-/**
- * Authentication Routes
- *
- * Handles:
- * - User login: POST /auth/token (returns a JWT token)
- * - User registration: POST /auth/register (creates a new user and returns a JWT token)
- */
-
 const express = require("express");
 const jsonschema = require("jsonschema");
 const { validate } = require("jsonschema");
@@ -20,19 +12,9 @@ const { BadRequestError } = require("../expressError");
 
 const router = new express.Router();
 
-/**
- * POST /auth/token
- *
- * Logs in a user and returns a JWT token.
- *
- * Request body:
- *   { username: string, password: string }
- *
- * Response:
- *   { token: string }
- *
- * Authorization: None
- */
+// POST /auth/token - Logs in a user and returns a JWT token
+// Request body: { username, password }
+// Response: { token }
 router.post("/token", async (req, res, next) => {
   try {
     const validator = validate(req.body, userAuthSchema);
@@ -49,19 +31,9 @@ router.post("/token", async (req, res, next) => {
   }
 });
 
-/**
- * POST /auth/register
- *
- * Registers a new user and returns the user object and a JWT token.
- *
- * Request body:
- *   { username: string, password: string, first_name: string, email: string }
- *
- * Response:
- *   { user: { username, first_name, email }, token: string }
- *
- * Authorization: None
- */
+// POST /auth/register - Registers a new user and returns user details and JWT token
+// Request body: { username, password, first_name, email }
+// Response: { user: { username, first_name, email }, token }
 router.post("/register", async (req, res, next) => {
   try {
     const validator = validate(req.body, userRegisterSchema);

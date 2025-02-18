@@ -1,42 +1,39 @@
 "use strict";
 
-//authentication
-// auth.js
-// authenticates correct user by username and password
+// auth.js - Authentication middleware
+
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 
 /**
- * Middleware: Authenticate user.
+ * Middleware: Authenticate user via JWT.
  *
- * If a token is provided, verify it. If valid, store the token payload
- * (including user data) in `res.locals.user`. If invalid, log the error
- * but do not terminate the request.
+ * If a valid token is provided, stores the decoded user data in `res.locals.user`.
+ * If invalid or missing, logs the error and continues without authentication.
  */
 function authenticateJWT(req, res, next) {
   try {
-    const authHeader = req.headers?.authorization; // Safely access headers
+    const authHeader = req.headers?.authorization; // Check for authorization header
     if (authHeader) {
-      const token = authHeader.replace(/^Bearer\s+/i, "").trim(); // Remove 'Bearer ' prefix
-      res.locals.user = jwt.verify(token, SECRET_KEY); // Store payload in res.locals.user
+      const token = authHeader.replace(/^Bearer\s+/i, "").trim(); // Remove 'Bearer' prefix
+      res.locals.user = jwt.verify(token, SECRET_KEY); // Store user data
     }
-    return next();
   } catch (err) {
     console.error("JWT authentication failed:", err.message);
-    res.locals.user = null; // ✅ Prevents token crash, allows soft logout
-    return next(); // ✅ Allows request to continue without hard failure
+    res.locals.user = null; // Allows request to proceed without authentication
   }
+  return next();
 }
 
 /**
  * Middleware: Ensure the user is logged in.
  *
- * If `res.locals.user` is not set, raise UnauthorizedError.
+ * If no authenticated user is found in `res.locals.user`, throw an UnauthorizedError.
  */
 function ensureLoggedIn(req, res, next) {
   if (!res.locals.user) {
-    console.warn("User not logged in.");
+    console.warn("Unauthorized access attempt.");
     return next(new UnauthorizedError("User must be logged in"));
   }
   return next();
@@ -45,8 +42,7 @@ function ensureLoggedIn(req, res, next) {
 /**
  * Middleware: Ensure the correct user is accessing the resource.
  *
- * Checks that the logged-in user's username matches the username
- * provided in the route params.
+ * Verifies that the logged-in user's username matches the username in route params.
  */
 function ensureCorrectUser(req, res, next) {
   const user = res.locals.user;

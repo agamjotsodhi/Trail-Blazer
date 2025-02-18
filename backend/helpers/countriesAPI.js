@@ -2,21 +2,19 @@
 
 // helpers/countriesAPI.js
 
-// Handles all axios data fetching from the restcountries API
-
+// Handles all API requests to the Rest Countries API.
 
 const axios = require("axios");
 
 const BASE_URL = "https://restcountries.com/v3.1";
 
 /**
- * Fetch country details from the API.
+ * Fetches country details by name.
  * 
  * @param {string} countryName - The name of the country (e.g., "Canada").
  * @returns {Promise<object>} - The country's data.
  * @throws {Error} - If the country is not found or an error occurs.
  */
-
 async function getCountry(countryName) {
   if (!countryName?.trim()) {
     throw new Error("Country name is required.");
@@ -32,9 +30,9 @@ async function getCountry(countryName) {
 }
 
 /**
- * Fetch all countries from the API.
+ * Fetches a list of all countries.
  * 
- * @returns {Promise<Array<object>>} - Array of all country data.
+ * @returns {Promise<Array<object>>} - An array of country data.
  */
 async function getAllCountries() {
   try {
@@ -46,10 +44,10 @@ async function getAllCountries() {
 }
 
 /**
- * Fetch countries that match a partial name (for autocomplete).
+ * Searches for countries by partial name (for autocomplete).
  * 
- * @param {string} partialName - Partial name of the country (e.g., "Can").
- * @returns {Promise<Array<object>>} - Array of matching countries.
+ * @param {string} partialName - The beginning of a country’s name (e.g., "Can").
+ * @returns {Promise<Array<object>>} - A list of matching countries.
  */
 async function searchCountries(partialName) {
   if (!partialName?.trim()) {
@@ -65,12 +63,11 @@ async function searchCountries(partialName) {
 }
 
 /**
- * Formats country data to insert into database
+ * Formats country data for database insertion.
  * 
  * @param {object} country - Country data from the API.
- * @returns {object} - Cleaned country details.
+ * @returns {object} - A structured country details object.
  */
-
 function prepareCountryDetails(country) {
   return {
     common_name: country.name?.common || null,

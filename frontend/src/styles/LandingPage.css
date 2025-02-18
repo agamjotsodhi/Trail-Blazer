@@ -1,62 +1,62 @@
 /* Remove default margins and ensure full height */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* whole page takes up the full viewport */
-  html, body {
-    height: 100%;
-    width: 100%;
-    overflow: hidden; /* Prevent scrolling */
-    background-color: rgb(21, 41, 147); /* Navy Blue */
-  }
-  
-  /* Landing Page Container */
-  .landing-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100vh;
-    width: 100vw;
-    background: linear-gradient(to bottom, rgb(21,41,147), rgb(95,93,249)); 
-    padding: 0 5vw; 
-  }
-  
-  /* Left Side Content */
-  .landing-content {
-    margin-left: 30px;
-    flex: 1;
-    color: white;
-    text-align: left;
-    max-width: 40%;
-  }
-  
-  /* Title Styling */
-  .landing-title {
-    font-size: 3.2rem;
-    margin-bottom: 10px;
-  }
-  
-  /* Description Styling */
-  .landing-description {
-    font-size: 1.2rem;
-    opacity: 0.9;
-  }
-  
-  /* Button Container */
-  .landing-buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 15px;
-  }
-  
-  /* Right Side Image */
-  .landing-image {
-    width: 38%; /* Adjust width */
-    height: auto;
-    max-height: 90vh;
-    margin-bottom: 50px;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure full page takes up the viewport */
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto; /* Allow scrolling on other pages */
+  background-color: rgb(21, 41, 147); /* Navy Blue */
+}
+
+/* Landing Page Container */
+.landing-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to bottom, rgb(21,41,147), rgb(95,93,249)); 
+  padding: 0 5vw;
+  overflow: hidden; /* Prevent scrolling only on the landing page */
+}
+
+/* Left Side Content */
+.landing-content {
+  margin-left: 30px;
+  flex: 1;
+  color: white;
+  text-align: left;
+  max-width: 40%;
+}
+
+/* Title Styling */
+.landing-title {
+  font-size: 3.2rem;
+  margin-bottom: 10px;
+}
+
+/* Description Styling */
+.landing-description {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* Button Container */
+.landing-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+/* Right Side Image */
+.landing-image {
+  width: 38%; /* Adjust width */
+  height: auto;
+  max-height: 90vh;
+  margin-bottom: 50px;
+}

@@ -1,26 +1,17 @@
 "use strict";
 
-/** Routes for users. */
-
 const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const User = require("../models/user");
-const { ensureCorrectUser } = require("../middleware/auth"); // Simplified middleware name for clarity
+const { ensureCorrectUser } = require("../middleware/auth");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 
 const router = express.Router();
 
-/**
- * GET /:username => { user }
- *
- * Retrieves user details.
- *
- * Returns:
- *   { username, first_name, email }
- *
- * Authorization required: Logged-in user matching the username
- */
+// GET /:username - Get user details
+// Response: { username, first_name, email }
+// Authorization: User must be logged in and match the requested username
 router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     const user = await User.get(req.params.username);
@@ -30,19 +21,10 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-/**
- * PATCH /:username { user } => { user }
- *
- * Allows a user to update their profile.
- *
- * Data can include:
- *   { first_name, email, password }
- *
- * Returns:
- *   { username, first_name, email }
- *
- * Authorization required: Logged-in user matching the username
- */
+// PATCH /:username - Update user profile
+// Request body: { first_name, email, password }
+// Response: { username, first_name, email }
+// Authorization: User must be logged in and match the requested username
 router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userUpdateSchema);
@@ -58,13 +40,9 @@ router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-/**
- * DELETE /:username => { deleted: username }
- *
- * Allows a user to delete their account.
- *
- * Authorization required: Logged-in user matching the username
- */
+// DELETE /:username - Delete user account
+// Response: { deleted: username }
+// Authorization: User must be logged in and match the requested username
 router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     await User.remove(req.params.username);

@@ -7,20 +7,9 @@ const { BadRequestError } = require("../expressError");
 
 const router = express.Router();
 
-/**
- * routes/weather.js
- * 
- * The weather route handles  
- */
-
-
-/**
- * POST /weather/:trip_id
- * Fetch and store weather data for a trip.
- *
- * Request Body: { location_city, start_date, end_date }
- * Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
- */
+// POST /weather/:trip_id - Fetch and store weather data for a trip
+// Request body: { location_city, start_date, end_date }
+// Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
 router.post("/:trip_id", authenticateJWT, async (req, res, next) => {
   try {
     const trip_id = Number(req.params.trip_id);
@@ -31,7 +20,7 @@ router.post("/:trip_id", authenticateJWT, async (req, res, next) => {
       throw new BadRequestError("Location, start date, and end date are required.");
     }
 
-    console.log(`[Weather Route] Fetching weather for Trip ID: ${trip_id} - ${location_city}`);
+    console.log(`[Weather] Fetching weather for Trip ID: ${trip_id} - ${location_city}`);
 
     const weather = await Weather.add(trip_id, { location_city, start_date, end_date });
 
@@ -41,18 +30,14 @@ router.post("/:trip_id", authenticateJWT, async (req, res, next) => {
   }
 });
 
-/**
- * GET /weather/:trip_id
- * Retrieve all weather records for a specific trip.
- *
- * Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
- */
+// GET /weather/:trip_id - Retrieve all weather records for a specific trip
+// Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
 router.get("/:trip_id", authenticateJWT, async (req, res, next) => {
   try {
     const trip_id = Number(req.params.trip_id);
     if (!trip_id || isNaN(trip_id)) throw new BadRequestError("Invalid trip ID.");
 
-    console.log(`[Weather Route] Retrieving weather for Trip ID: ${trip_id}`);
+    console.log(`[Weather] Retrieving weather for Trip ID: ${trip_id}`);
 
     const weather = await Weather.getAllForTrip(trip_id);
     res.json({ weather });
@@ -61,18 +46,14 @@ router.get("/:trip_id", authenticateJWT, async (req, res, next) => {
   }
 });
 
-/**
- * GET /weather/details/:weather_id
- * Retrieve a specific weather record by its ID.
- *
- * Response: { weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }
- */
+// GET /weather/details/:weather_id - Retrieve a specific weather record by its ID
+// Response: { weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }
 router.get("/details/:weather_id", authenticateJWT, async (req, res, next) => {
   try {
     const weather_id = Number(req.params.weather_id);
     if (!weather_id || isNaN(weather_id)) throw new BadRequestError("Invalid weather ID.");
 
-    console.log(`[Weather Route] Retrieving weather details for Weather ID: ${weather_id}`);
+    console.log(`[Weather] Retrieving details for Weather ID: ${weather_id}`);
 
     const weather = await Weather.get(weather_id);
     res.json({ weather });

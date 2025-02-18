@@ -7,14 +7,12 @@ const db = require("../db");
 const axios = require("axios");
 const { prepareCountryDetails } = require("../helpers/countriesAPI");
 
-/**
- * Seeds the destinations table with data from the REST Countries API.
- */
+// Seeds the destinations table with data from the REST Countries API
 async function seedDestinations() {
   console.log("Seeding destinations table...");
 
   try {
-    // Fetch all countries from the REST Countries API
+    // Fetch all country data from the API
     const { data: countries } = await axios.get("https://restcountries.com/v3.1/all");
     console.log(`Fetched ${countries.length} countries. Inserting into database...`);
 
@@ -25,7 +23,7 @@ async function seedDestinations() {
       try {
         const details = prepareCountryDetails(country);
 
-        // Insert country details into the destinations table
+        // Insert country details into the database
         await db.query(
           `INSERT INTO destinations 
            (common_name, official_name, capital_city, independent, un_member, currencies, alt_spellings, 
@@ -35,7 +33,6 @@ async function seedDestinations() {
           Object.values(details)
         );
 
-        // console error handling updates while adding countries
         console.log(`Inserted: ${details.common_name}`);
         successCount++;
       } catch (err) {
@@ -48,8 +45,8 @@ async function seedDestinations() {
   } catch (err) {
     console.error("Seeding failed:", err.message);
   } finally {
-    db.end(); 
-    process.exit(); 
+    db.end(); // Close the database connection
+    process.exit(); // Exit the script
   }
 }
 

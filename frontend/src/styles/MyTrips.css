@@ -1,0 +1,97 @@
+/****** Main Layout ******/
+.my-trips-container {
+  width: 100%;
+  max-width: 1200px; /* Expands width */
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Page Title */
+.page-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Message Styling */
+.loading-text, .error-message, .no-trips-text {
+  font-size: 18px;
+  margin-top: 15px;
+}
+
+/* Plan Trip Link */
+.plan-trip-link {
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.plan-trip-link:hover {
+  text-decoration: underline;
+}
+
+/****** Trip Cards ******/
+.trips-list {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.trip-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 95%;
+  max-width: 900px;
+  padding: 15px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease-in-out;
+}
+
+.trip-card:hover {
+  transform: scale(1.02);
+}
+
+/* Trip Content */
+.trip-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: black;
+  flex-grow: 1;
+}
+
+/* Country Flag */
+.trip-flag {
+  width: 50px;
+  height: 30px;
+  border-radius: 4px;
+}
+
+/* Trip Details */
+.trip-details {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.trip-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.trip-location, .trip-dates, .trip-interests {
+  font-size: 14px;
+  color: #555;
+  margin-top: 3px;
+}
+
+

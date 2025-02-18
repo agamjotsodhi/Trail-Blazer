@@ -27,30 +27,59 @@ async function generateItinerary(city, country, interests, startDate, endDate) {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `
-  You are a travel planner. Create a **concise travel itinerary** for **${city}, ${country}** from **${startDate} to ${endDate}**.
+  You are a highly experienced travel planner. Create a **well-structured, detailed** travel itinerary for **${city}, ${country}** from **${startDate} to ${endDate}**.
 
-  Include:
-  - Must-visit landmarks (1-2 per day)
-  - A recommended dining spot per day
-  - A unique local activity per day
+  **Instructions for formatting:**
+  - Clearly separate each day with a **bold header**.
+  - Each day should contain:
+    - **Personalized Suggestions:** If the user is interested in **${interests || "general travel"}**, tailor activities accordingly.
+    - **Morning Activity:** A must-visit landmark or attraction.
+    - **Lunch Recommendation:** A local favorite or highly-rated restaurant.
+    - **Afternoon Activity:** A cultural experience, hidden gem, or shopping area.
+    - **Dinner Spot:** A well-regarded restaurant serving regional specialties.
+    - **Evening Experience:** A relaxing or fun activity (night market, rooftop bar, etc.).
+  
 
-  ${interests ? `The user is interested in: **${interests}**.` : ""}
+  **Ensure the response follows this format exactly:**
+  ---
+  **Day 1: Arrival & City Highlights**
 
-  **Format the response as follows**:
-  - **Day X:** [Landmark], [Dining], [Activity]
-  - Keep each day's details under 3 lines.
-  - Ensure a clear, structured layout.
+  - **Morning:** [Activity at a Famous Site]
+  - **Lunch:** [Great Local Eatery] – Known for [Special Dish]
+  - **Afternoon:** [Exploring a Unique Area]
+  - **Dinner:** [Highly Rated Restaurant] – Offers [Type of Cuisine]
+  - **Evening:** [Leisure or Social Experience]
+
+  ---
+  **Day 2: Iconic Landmarks & Hidden Gems**
+
+  - **Morning:** [Activity at a Famous Site]
+  - **Lunch:** [Great Local Eatery] – Known for [Special Dish]
+  - **Afternoon:** [Exploring a Unique Area]
+  - **Dinner:** [Highly Rated Restaurant] – Offers [Type of Cuisine]
+  - **Evening:** [Leisure or Social Experience]
+
+  **Use a line break before each day title to improve readability.**  
   `;
 
   try {
-    console.log(` Generating itinerary for ${city}, ${country}...`);
+    console.log(`Generating itinerary for ${city}, ${country}...`);
 
     const response = await model.generateContent(prompt);
-    const itinerary = response?.response?.text();
+    let itinerary = response?.response?.text();
 
     if (!itinerary) throw new Error("Unexpected API response format.");
 
-    return itinerary;
+    // Ensure double line breaks before each "Day X" for readability
+    itinerary = itinerary.replace(/\*\*Day/g, "\n\n**Day");
+
+    // Replace single asterisks (if any) with double asterisks to ensure bold formatting
+    itinerary = itinerary.replace(/\*([^*]+)\*/g, "**$1**");
+
+    // Ensure each activity has a proper line break
+    itinerary = itinerary.replace(/- \*\*(Morning|Lunch|Afternoon|Dinner|Evening)\*\:/g, "\n- **$1:**");
+
+    return itinerary.trim();
   } catch (error) {
     console.error("Itinerary generation failed:", { city, country, startDate, endDate, error: error.message });
 

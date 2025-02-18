@@ -1,0 +1,49 @@
+/* PlanTrip container */
+.plan-trip-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Full viewport height */
+  padding: 20px;
+}
+
+/* Card-like form container */
+.plan-trip-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Title styling */
+.plan-trip-title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Centering the form inside the card */
+.plan-trip-form {
+  width: 100%;
+}
+
+/* Animations for form appearance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.plan-trip-card {
+  animation: fadeIn 0.5s ease-in-out;
+}

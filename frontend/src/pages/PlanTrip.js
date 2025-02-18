@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import PlanTripForm from "../forms/PlanTripForm";
 import TrailBlazerApi from "../api";
+import "../styles/PlanTrip.css"; // Only minor layout styles
 
 const PlanTrip = () => {
   const navigate = useNavigate();
@@ -21,7 +22,10 @@ const PlanTrip = () => {
 
   return (
     <div className="plan-trip-container">
-      <PlanTripForm createTrip={createTrip} />
+      <div className="plan-trip-card">
+        <h2 className="plan-trip-title">Plan Your Next Adventure</h2>
+        <PlanTripForm createTrip={createTrip} />
+      </div>
     </div>
   );
 };

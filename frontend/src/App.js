@@ -12,14 +12,14 @@ function App() {
   const [token, setToken] = useLocalStorage("token", null);
   const [isFetchingUser, setIsFetchingUser] = useState(false);
 
-  /** Logs out the user properly */
+  // Logs user out
   const logOutUser = useCallback(() => {
     setToken(null);
     setCurrentUser(null);
     TrailBlazerApi.logoutUser();
   }, [setToken]);
 
-  /** Fetches user details when token is available (Restores user on page reload) */
+  // Gets user details when token is available (Restores user on page reload) 
   useEffect(() => {
     const restoreUser = async () => {
       if (token && !currentUser && !isFetchingUser) {
@@ -43,7 +43,7 @@ function App() {
     restoreUser();
   }, [token, currentUser, isFetchingUser, logOutUser]);
 
-  /** Registers a new user */
+  // Registers new user 
   const setTokenAfterRegister = async (data) => {
     try {
       let response = await TrailBlazerApi.registerUser(data);
@@ -60,7 +60,7 @@ function App() {
     }
   };
 
-  /** Logs in an existing user */
+  //  Logs in existing user 
   const setTokenAfterLogin = async (data) => {
     try {
       let response = await TrailBlazerApi.loginUser(data);

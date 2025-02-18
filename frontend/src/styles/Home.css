@@ -1,28 +1,33 @@
-/* Full-page layout */
+/* Prevent scrolling when on the Home page */
+body.home-no-scroll {
+    overflow: hidden;
+}
+
+/* Home Page Container */
 .home-container {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Keeps everything at the top */
-    background-color: rgb(238, 238, 238);
+    justify-content: flex-start;
     align-items: center;
     padding: 20px;
-    gap: 10px; 
+    gap: 10px;
+    position: relative;
 }
 
-/* Title at the top-left */
+/* Title */
 .home-title {
     align-self: flex-start;
     margin-left: 20px;
     margin-top: 20px;
-    color: rgb(45, 45, 45);
+    color: rgb(73, 73, 73);
     font-size: 3rem;
 }
 
-/* Home page bus graphic */
+/* Home Page Bus Graphic */
 .home-bus {
     align-self: center;
-    margin-top: -30px; 
+    margin-top: -30px;
 }
 
 .home-bus img {
@@ -31,10 +36,13 @@
     height: auto;
 }
 
-
+/* Buttons - Fixed Position */
 .home-buttons {
     display: flex;
     gap: 20px;
-    position: absolute;
-    bottom: 65px; 
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
 }

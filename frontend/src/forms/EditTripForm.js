@@ -27,7 +27,7 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
 
   return (
     <div className="edit-trip-form-container"> 
-      <form className="FormContainer" onSubmit={handleEditSubmit}> {/* Shared form styling */}
+      <form className="form-container" onSubmit={handleEditSubmit}> {/* Shared form styling */}
         <h1>Edit Trip</h1>
 
         <div className="FormInput">

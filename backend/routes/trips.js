@@ -7,13 +7,9 @@ const { BadRequestError } = require("../expressError");
 
 const router = express.Router();
 
-/**
- * POST /trips
- * Create a new trip and fetch related data (destination, weather, AI itinerary).
- *
- * Request Body: { trip_name, start_date, end_date, location_city, location_country, interests }
- * Response: { trip, destination, weather, itinerary }
- */
+// POST /trips - Create a new trip and fetch related data (destination, weather, AI itinerary)
+// Request body: { trip_name, start_date, end_date, location_city, location_country, interests }
+// Response: { trip, destination, weather, itinerary }
 router.post("/", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
@@ -41,12 +37,8 @@ router.post("/", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   }
 });
 
-/**
- * GET /trips
- * Retrieve all trips for the logged-in user.
- *
- * Response: { trips: [{ trip_id, trip_name, start_date, end_date, location_city, location_country, interests }, ...] }
- */
+// GET /trips - Get all trips for the logged-in user
+// Response: { trips: [{ trip_id, trip_name, start_date, end_date, location_city, location_country, interests }, ...] }
 router.get("/", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
@@ -60,15 +52,8 @@ router.get("/", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   }
 });
 
-/**
- * GET /trips/:trip_id
- * Retrieve details of a specific trip, including:
- * - Destination details
- * - Weather forecast
- * - AI-generated itinerary
- *
- * Response: { trip, destination, weather, itinerary }
- */
+// GET /trips/:trip_id - Get details of a specific trip (destination, weather, AI itinerary)
+// Response: { trip, destination, weather, itinerary }
 router.get("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
@@ -86,13 +71,9 @@ router.get("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next) 
   }
 });
 
-/**
- * PATCH /trips/:trip_id
- * Update an existing trip.
- *
- * Request Body: { trip_name, start_date, end_date, location_city, location_country, interests }
- * Response: { updatedTrip }
- */
+// PATCH /trips/:trip_id - Update an existing trip
+// Request body: { trip_name, start_date, end_date, location_city, location_country, interests }
+// Response: { updatedTrip }
 router.patch("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
@@ -110,12 +91,8 @@ router.patch("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next
   }
 });
 
-/**
- * DELETE /trips/:trip_id
- * Delete a trip.
- *
- * Response: { message: "Trip deleted" }
- */
+// DELETE /trips/:trip_id - Delete a trip
+// Response: { message: "Trip deleted" }
 router.delete("/:trip_id", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
   try {
     const user_id = res.locals.user.user_id;
