@@ -31,7 +31,7 @@ class TrailBlazerApi {
     } catch (err) {
       console.error("API Error:", err.response);
       if (err.response?.status === 401) {
-        this.logoutUser(); // ✅ Auto logout on 401 Unauthorized
+        this.logoutUser(); // Auto logout on 401 Unauthorized
       }
       const message = err.response?.data?.error || "An error occurred";
       throw Array.isArray(message) ? message : [message];
