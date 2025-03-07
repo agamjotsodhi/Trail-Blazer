@@ -6,7 +6,7 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "jest --runInBand",
-    "seed": "node seeds/seedDestinations.js"
+    "build": "echo 'No build step needed for backend'"
   },
   "keywords": [],
   "author": "Agamjot Sodhi",
