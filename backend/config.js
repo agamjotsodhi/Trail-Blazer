@@ -9,16 +9,20 @@ require("colors");
 const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
 
 // Port for the application (defaults to 3000 if not set)
-const PORT = +process.env.PORT || 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 // Get the appropriate database URI based on the environment
 function getDatabaseUri() {
+  if (!process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
+    throw new Error(" DATABASE_URL is missing in production!");
+  }
   console.log(" DATABASE_URL from .env:", process.env.DATABASE_URL); // Debugging
 
   return process.env.NODE_ENV === "test"
     ? process.env.DATABASE_URL_TEST || "postgresql://postgres:password@localhost:5432/trailblazer_test"
     : process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/trailblazer";
 }
+
 
 // Set bcrypt work factor (lower for tests, higher for production)
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
