@@ -4,7 +4,7 @@
 require("dotenv").config();
 
 const app = require("./app");
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 10000;
 
 // Ensure the server listens on 0.0.0.0 for external access
 app.listen(PORT, "0.0.0.0", () => {
