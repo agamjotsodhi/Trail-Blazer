@@ -1,9 +1,13 @@
 "use strict";
 
-// Sets up the database connection for the Trailblazer backend
+// Load environment variables from .env file
+require("dotenv").config();
 
 const { Client } = require("pg");
 const { getDatabaseUri } = require("./config");
+
+// Debugging: Log the database connection string
+console.log("Using database connection string:", getDatabaseUri());
 
 let db;
 
@@ -11,9 +15,7 @@ let db;
 if (process.env.NODE_ENV === "production") {
   db = new Client({
     connectionString: getDatabaseUri(),
-    ssl: {
-      rejectUnauthorized: false, // Required for some cloud-hosted databases
-    },
+    ssl: { rejectUnauthorized: false }, // Required for Supabase and other cloud-hosted DBs
   });
 } else {
   db = new Client({
@@ -22,15 +24,17 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Connect to the database
-db.connect();
-
-// Test query to confirm database connection
-db.query("SELECT NOW()", (err, res) => {
-  if (err) {
-    console.error("Database connection error:", err);
-  } else {
-    console.log("Database connected successfully. Current time:", res.rows[0].now);
-  }
-});
+db.connect()
+  .then(() => {
+    console.log(" Database connected successfully.");
+    return db.query("SELECT NOW()");
+  })
+  .then((res) => {
+    console.log("Current database time:", res.rows[0].now);
+  })
+  .catch((err) => {
+    console.error(" Database connection error:", err);
+    process.exit(1); // Exit the app if DB connection fails
+  });
 
 module.exports = db;

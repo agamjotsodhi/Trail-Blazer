@@ -13,6 +13,8 @@ const PORT = +process.env.PORT || 3000;
 
 // Get the appropriate database URI based on the environment
 function getDatabaseUri() {
+  console.log(" DATABASE_URL from .env:", process.env.DATABASE_URL); // Debugging
+
   return process.env.NODE_ENV === "test"
     ? process.env.DATABASE_URL_TEST || "postgresql://postgres:password@localhost:5432/trailblazer_test"
     : process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/trailblazer";
