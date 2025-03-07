@@ -1,12 +1,16 @@
 // Alert.js
 // Sets alert for error display messages 
+import React from "react";
+import { Alert as BootstrapAlert } from "reactstrap";
 
 const Alert = ({ type, message }) => {
-	return (
-		<div className={`alert alert-${type}`} role="alert">
-			<p className="mb-0 small">{message}</p>
-		</div>
-	);
+  if (!message) return null;
+
+  return (
+    <BootstrapAlert color={type}>
+      {message}
+    </BootstrapAlert>
+  );
 };
 
 export default Alert;

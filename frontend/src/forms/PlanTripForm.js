@@ -55,6 +55,8 @@ const PlanTripForm = ({ createTrip }) => {
             value={tripData.start_date}
             onChange={handleChange}
             required
+            min="2025-02-26" //use npm date time library
+            // add blocked dates
           />
         </div>
 
@@ -64,18 +66,6 @@ const PlanTripForm = ({ createTrip }) => {
             type="date"
             name="end_date"
             value={tripData.end_date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>City</label>
-          <input
-            type="text"
-            name="location_city"
-            placeholder="e.g. Paris"
-            value={tripData.location_city}
             onChange={handleChange}
             required
           />
@@ -93,6 +83,19 @@ const PlanTripForm = ({ createTrip }) => {
           />
         </div>
 
+        <div className="form-group">
+          <label>City</label>
+          <input
+            type="text"
+            name="location_city"
+            placeholder="e.g. Paris"
+            value={tripData.location_city}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+      
         <div className="form-group">
           <label>Interests</label>
           <input
