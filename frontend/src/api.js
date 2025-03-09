@@ -1,7 +1,11 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3000";
+const BASE_URL = "https://trailblazer-wlzp.onrender.com"; // Deployed backend URL
+
+// Uncomment the following line ONLY for local development:
+// const BASE_URL = "http://localhost:3000"; 
+
 
 class TrailBlazerApi {
   static token = localStorage.getItem("token") || null;
