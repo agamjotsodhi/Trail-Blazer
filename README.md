@@ -2,6 +2,12 @@
 
 Trail Blazer is a full-stack web application designed to help users create personalized travel itineraries based on their interests and hobbies. By integrating AI-driven recommendations, weather insights, and real-time country data, this application simplifies trip planning, making it an intuitive and interactive experience.
 
+## Visit the Site
+Check out the [website here!](https://trailblazer-trip-planning.onrender.com/)
+
+[<img width="1000" alt="project picture" src="https://github.com/agamjotsodhi/TrailBlazer/blob/main/frontend/src/assets/preview.png?raw=true">](https://curated-render.onrender.com)
+
+
 ## Features
 
 - **AI-Powered Itinerary Generation**: Get personalized travel plans based on your interests.
@@ -10,12 +16,6 @@ Trail Blazer is a full-stack web application designed to help users create perso
 - **Country Insights**: Fetch relevant travel information using Rest Countries API.
 - **User Authentication**: Secure sign-up and login functionality.
 - **Save & Edit Itineraries**: Users can create, modify, and save travel plans.
-
-
-## Visit the Site
-Check out the [website here!](https://trailblazer-trip-planning.onrender.com/)
-
-[<img width="1000" alt="project picture" src="https://github.com/agamjotsodhi/TrailBlazer/blob/main/frontend/src/assets/preview.png?raw=true">](https://curated-render.onrender.com)
 
 ## Tech Stack
 
