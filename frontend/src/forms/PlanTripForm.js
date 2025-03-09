@@ -1,55 +1,36 @@
 import React, { useState } from "react";
-import Select from "react-select";
-import { Country, City } from "country-state-city"; // Import country & city functions from library
 import { useNavigate } from "react-router-dom";
-import "../styles/forms.css";
-import "../styles/PlanTrip.css";
+import "../styles/forms.css"; // main form styling from forms.css for styling
+import "../styles/PlanTrip.css"; // for Minor adjustments
 
 const PlanTripForm = ({ createTrip }) => {
-  const today = new Date().toISOString().split("T")[0];
-
-  // Convert country data into react-select format
-  const countryOptions = Country.getAllCountries().map((country) => ({
-    value: country.isoCode,
-    label: country.name,
-  }));
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
 
   const [tripData, setTripData] = useState({
     trip_name: "",
-    start_date: today,
+    start_date: today, // Default to today
     end_date: "",
     location_city: "",
-    location_country: null,
+    location_country: "",
     interests: "",
   });
 
-  const [cityOptions, setCityOptions] = useState([]);
-
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleCountryChange = (selectedOption) => {
-    setTripData({ ...tripData, location_country: selectedOption.value });
-
-    // Fetch cities based on selected country
-    const cities = City.getCitiesOfCountry(selectedOption.value).map((city) => ({
-      value: city.name,
-      label: city.name,
-    }));
-
-    setCityOptions(cities);
-  };
-
-  const handleCityChange = (selectedOption) => {
-    setTripData({ ...tripData, location_city: selectedOption.value });
+  const handleChange = (e) => {
+    setTripData({ ...tripData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const newTrip = await createTrip(tripData);
+      setMessage(`Trip "${newTrip.trip_name}" successfully created!`);
       navigate(`/trips/${newTrip.trip_id}`);
     } catch (err) {
       console.error("Error creating trip:", err);
+      setMessage("Failed to create trip.");
     }
   };
 
@@ -63,7 +44,7 @@ const PlanTripForm = ({ createTrip }) => {
             name="trip_name"
             placeholder="e.g. Disney World 2025"
             value={tripData.trip_name}
-            onChange={(e) => setTripData({ ...tripData, trip_name: e.target.value })}
+            onChange={handleChange}
             required
           />
         </div>
@@ -74,9 +55,9 @@ const PlanTripForm = ({ createTrip }) => {
             type="date"
             name="start_date"
             value={tripData.start_date}
-            onChange={(e) => setTripData({ ...tripData, start_date: e.target.value })}
+            onChange={handleChange}
             required
-            min={today}
+            min={today} // Minimum date is today
           />
         </div>
 
@@ -86,32 +67,33 @@ const PlanTripForm = ({ createTrip }) => {
             type="date"
             name="end_date"
             value={tripData.end_date}
-            onChange={(e) => setTripData({ ...tripData, end_date: e.target.value })}
+            onChange={handleChange}
             required
-            min={tripData.start_date || today}
+            min={tripData.start_date || today} // End date must be after or equal to start date
           />
         </div>
 
         <div className="form-group">
           <label>Country</label>
-          <Select
+          <input
+            type="text"
             name="location_country"
-            options={countryOptions}
-            value={countryOptions.find((option) => option.value === tripData.location_country)}
-            onChange={handleCountryChange}
-            placeholder="Select a country"
+            placeholder="e.g. France"
+            value={tripData.location_country}
+            onChange={handleChange}
+            required
           />
         </div>
 
         <div className="form-group">
           <label>City</label>
-          <Select
+          <input
+            type="text"
             name="location_city"
-            options={cityOptions}
-            value={cityOptions.find((option) => option.value === tripData.location_city)}
-            onChange={handleCityChange}
-            placeholder="Select a city"
-            isDisabled={!tripData.location_country}
+            placeholder="e.g. Paris"
+            value={tripData.location_city}
+            onChange={handleChange}
+            required
           />
         </div>
 
@@ -122,16 +104,19 @@ const PlanTripForm = ({ createTrip }) => {
             name="interests"
             placeholder="e.g. Museums, Hiking, Beaches"
             value={tripData.interests}
-            onChange={(e) => setTripData({ ...tripData, interests: e.target.value })}
+            onChange={handleChange}
           />
         </div>
 
         <button className="form-button" type="submit">
           Create Trip
         </button>
+
+        {message && <p className="form-message">{message}</p>}
       </form>
     </div>
   );
 };
 
 export default PlanTripForm;
+
