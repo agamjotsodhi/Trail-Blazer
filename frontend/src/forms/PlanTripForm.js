@@ -1,17 +1,25 @@
 import React, { useState } from "react";
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import "../styles/forms.css"; // main form styling from forms.css for styling
-import "../styles/PlanTrip.css"; // for Minor adjustments
+import countries from "countries-list"; // Importing country list
+import "../styles/forms.css"; // Main form styling
+import "../styles/PlanTrip.css"; // Minor adjustments
 
 const PlanTripForm = ({ createTrip }) => {
   const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+  // Convert countries-list to an array for react-select
+  const countryOptions = Object.values(countries.countries).map((country) => ({
+    label: country.name,
+    value: country.name,
+  }));
 
   const [tripData, setTripData] = useState({
     trip_name: "",
     start_date: today, // Default to today
     end_date: "",
     location_city: "",
-    location_country: "",
+    location_country: null, // React-Select needs null for initial state
     interests: "",
   });
 
@@ -20,6 +28,11 @@ const PlanTripForm = ({ createTrip }) => {
 
   const handleChange = (e) => {
     setTripData({ ...tripData, [e.target.name]: e.target.value });
+  };
+
+  // Handle country selection
+  const handleCountryChange = (selectedOption) => {
+    setTripData({ ...tripData, location_country: selectedOption ? selectedOption.value : "" });
   };
 
   const handleSubmit = async (e) => {
@@ -75,13 +88,12 @@ const PlanTripForm = ({ createTrip }) => {
 
         <div className="form-group">
           <label>Country</label>
-          <input
-            type="text"
+          <Select
             name="location_country"
-            placeholder="e.g. France"
-            value={tripData.location_country}
-            onChange={handleChange}
-            required
+            options={countryOptions}
+            value={countryOptions.find((option) => option.value === tripData.location_country)}
+            onChange={handleCountryChange}
+            placeholder="Select a country"
           />
         </div>
 
