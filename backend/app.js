@@ -18,8 +18,14 @@ const userRoutes = require("./routes/users");
 
 const app = express();
 
-// Middleware
-app.use(cors()); // Enable Cross-Origin Resource Sharing
+// FIXED: CORS CONFIGURATION
+const corsOptions = {
+  origin: "https://trailblazer-trip-planning.onrender.com", // frontend deployment URL
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Allows JWT authentication & cookies
+};
+
+app.use(cors(corsOptions)); // Apply CORS with the correct settings
 app.use(express.json()); // Parse JSON request bodies
 app.use(authenticateJWT); // JWT authentication middleware
 

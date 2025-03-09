@@ -4,11 +4,9 @@ import "../styles/forms.css"; // main form styling from forms.css for styling
 import "../styles/PlanTrip.css"; // for Minor adjustments
 
 const PlanTripForm = ({ createTrip }) => {
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
-
   const [tripData, setTripData] = useState({
     trip_name: "",
-    start_date: today, // Default to today
+    start_date: "",
     end_date: "",
     location_city: "",
     location_country: "",
@@ -57,7 +55,8 @@ const PlanTripForm = ({ createTrip }) => {
             value={tripData.start_date}
             onChange={handleChange}
             required
-            min={today} // Minimum date is today
+            min="2025-02-26" //use npm date time library
+            // add blocked dates
           />
         </div>
 
@@ -69,7 +68,6 @@ const PlanTripForm = ({ createTrip }) => {
             value={tripData.end_date}
             onChange={handleChange}
             required
-            min={tripData.start_date || today} // End date must be after or equal to start date
           />
         </div>
 
@@ -97,6 +95,7 @@ const PlanTripForm = ({ createTrip }) => {
           />
         </div>
 
+      
         <div className="form-group">
           <label>Interests</label>
           <input
@@ -119,4 +118,3 @@ const PlanTripForm = ({ createTrip }) => {
 };
 
 export default PlanTripForm;
-
