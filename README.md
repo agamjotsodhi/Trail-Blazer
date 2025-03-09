@@ -22,14 +22,14 @@ Check out the [website here!](https://trailblazer-trip-planning.onrender.com/)
 ### Frontend
 
 - React.js (with Hooks and State Management)
-- Tailwind CSS
+- CSS
 - React Router
 
 ### Backend
 
 - Node.js with Express.js
 - PostgreSQL for database management
-- OpenAI API for AI-generated recommendations
+- Gemini API for AI-generated recommendations
 - Rest Countries API for country insights
 - OpenWeatherMap API for weather updates
 
