@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import TrailBlazerApi from "../api";
 import "../styles/forms.css";
 
-
 const EditTripForm = ({ trip, onClose, onUpdate }) => {
   // Initialize state with the existing trip data
   const [editData, setEditData] = useState({ ...trip });
@@ -27,10 +26,10 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
 
   return (
     <div className="edit-trip-form-container"> 
-      <form className="form-container" onSubmit={handleEditSubmit}> {/* Shared form styling */}
+      <form className="form-container" onSubmit={handleEditSubmit}> 
         <h1>Edit Trip</h1>
 
-        <div className="FormInput">
+        <div className="form-group">
           <label>Trip Name</label>
           <input
             type="text"
@@ -41,7 +40,7 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
           />
         </div>
 
-        <div className="FormInput">
+        <div className="form-group">
           <label>Start Date</label>
           <input
             type="date"
@@ -52,7 +51,7 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
           />
         </div>
 
-        <div className="FormInput">
+        <div className="form-group">
           <label>End Date</label>
           <input
             type="date"
@@ -63,7 +62,7 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
           />
         </div>
 
-        <div className="FormInput">
+        <div className="form-group">
           <label>City</label>
           <input
             type="text"
@@ -74,7 +73,7 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
           />
         </div>
 
-        <div className="FormInput">
+        <div className="form-group">
           <label>Country</label>
           <input
             type="text"
@@ -85,7 +84,7 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
           />
         </div>
 
-        <div className="FormInput">
+        <div className="form-group">
           <label>Interests</label>
           <input
             type="text"
@@ -97,9 +96,9 @@ const EditTripForm = ({ trip, onClose, onUpdate }) => {
         </div>
 
         {/* Save and Cancel Buttons */}
-        <div className="FormButtonGroup">
-          <button className="FormButton" type="submit">Save</button>
-          <button className="CancelButton" type="button" onClick={onClose}>Cancel</button>
+        <div className="form-button-group">
+          <button className="form-button" type="submit">Save</button>
+          <button className="cancel-button" type="button" onClick={onClose}>Cancel</button>
         </div>
       </form>
     </div>
