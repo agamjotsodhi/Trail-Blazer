@@ -16,6 +16,7 @@ const PlanTripForm = ({ createTrip }) => {
   });
 
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Disable button on first click
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,6 +25,8 @@ const PlanTripForm = ({ createTrip }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // Prevent multiple submissions
+    setIsSubmitting(true);
     try {
       const newTrip = await createTrip(tripData);
       setMessage(`Trip "${newTrip.trip_name}" successfully created!`);
@@ -31,6 +34,7 @@ const PlanTripForm = ({ createTrip }) => {
     } catch (err) {
       console.error("Error creating trip:", err);
       setMessage("Failed to create trip.");
+      setIsSubmitting(false); // Re-enable button if submission fails
     }
   };
 
@@ -108,8 +112,8 @@ const PlanTripForm = ({ createTrip }) => {
           />
         </div>
 
-        <button className="form-button" type="submit">
-          Create Trip
+        <button className="form-button" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Creating..." : "Create Trip"}
         </button>
 
         {message && <p className="form-message">{message}</p>}
