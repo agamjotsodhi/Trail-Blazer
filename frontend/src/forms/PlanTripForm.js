@@ -1,36 +1,56 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/forms.css"; // main form styling from forms.css for styling
-import "../styles/PlanTrip.css"; // for Minor adjustments
+import "../styles/forms.css"; // Main form styling
+import "../styles/PlanTrip.css"; // Additional styling for layout adjustments
 
+/**
+ * PlanTripForm
+ * 
+ * Allows users to create a new trip by entering trip details.
+ * 
+ * Props:
+ * - createTrip: Function to handle trip creation.
+ */
 const PlanTripForm = ({ createTrip }) => {
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format.
 
+  // Initial state for trip details
   const [tripData, setTripData] = useState({
     trip_name: "",
-    start_date: today, // Default to today
+    start_date: today, // Default to today's date
     end_date: "",
     location_city: "",
     location_country: "",
     interests: "",
   });
 
-  const [message, setMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Disable button on first click
+  const [message, setMessage] = useState(""); // Stores success or error messages
+  const [isSubmitting, setIsSubmitting] = useState(false); // Prevents multiple submissions
   const navigate = useNavigate();
 
+  /**
+   * Handles input field changes and updates state.
+   * 
+   * @param {Event} e - The input change event.
+   */
   const handleChange = (e) => {
     setTripData({ ...tripData, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Handles form submission to create a new trip.
+   * 
+   * @param {Event} e - Form submission event.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return; // Prevent multiple submissions
+
     setIsSubmitting(true);
     try {
       const newTrip = await createTrip(tripData);
       setMessage(`Trip "${newTrip.trip_name}" successfully created!`);
-      navigate(`/trips/${newTrip.trip_id}`);
+      navigate(`/trips/${newTrip.trip_id}`); // Redirect to trip details page
     } catch (err) {
       console.error("Error creating trip:", err);
       setMessage("Failed to create trip.");
@@ -41,6 +61,8 @@ const PlanTripForm = ({ createTrip }) => {
   return (
     <div className="plan-trip-form-container">
       <form className="form-container" onSubmit={handleSubmit}>
+        
+        {/* Trip Name */}
         <div className="form-group">
           <label>Trip Name</label>
           <input
@@ -53,6 +75,7 @@ const PlanTripForm = ({ createTrip }) => {
           />
         </div>
 
+        {/* Start Date */}
         <div className="form-group">
           <label>Start Date</label>
           <input
@@ -61,10 +84,11 @@ const PlanTripForm = ({ createTrip }) => {
             value={tripData.start_date}
             onChange={handleChange}
             required
-            min={today} // Minimum date is today
+            min={today} // Prevents past dates
           />
         </div>
 
+        {/* End Date */}
         <div className="form-group">
           <label>End Date</label>
           <input
@@ -73,10 +97,11 @@ const PlanTripForm = ({ createTrip }) => {
             value={tripData.end_date}
             onChange={handleChange}
             required
-            min={tripData.start_date || today} // End date must be after or equal to start date
+            min={tripData.start_date || today} // Ensures end date is after start date
           />
         </div>
 
+        {/* Country */}
         <div className="form-group">
           <label>Country</label>
           <input
@@ -89,6 +114,7 @@ const PlanTripForm = ({ createTrip }) => {
           />
         </div>
 
+        {/* City */}
         <div className="form-group">
           <label>City</label>
           <input
@@ -101,6 +127,7 @@ const PlanTripForm = ({ createTrip }) => {
           />
         </div>
 
+        {/* Interests */}
         <div className="form-group">
           <label>Interests</label>
           <input
@@ -112,10 +139,12 @@ const PlanTripForm = ({ createTrip }) => {
           />
         </div>
 
+        {/* Submit button with loading state */}
         <button className="form-button" type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create Trip"}
         </button>
 
+        {/* Display success/error message */}
         {message && <p className="form-message">{message}</p>}
       </form>
     </div>

@@ -1,5 +1,6 @@
 // Alert.js
 // Sets alert for error display messages 
+
 import React from "react";
 import { Alert as BootstrapAlert } from "reactstrap";
 

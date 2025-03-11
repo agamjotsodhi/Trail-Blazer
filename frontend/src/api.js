@@ -6,11 +6,19 @@ const BASE_URL = "https://trailblazer-wlzp.onrender.com"; // Deployed backend UR
 // Uncomment the following line ONLY for local development:
 // const BASE_URL = "http://localhost:3000"; 
 
-
+/**
+ * TrailBlazerApi
+ * 
+ * Handles API requests for authentication, trips, destinations, and user-related operations.
+ */
 class TrailBlazerApi {
   static token = localStorage.getItem("token") || null;
 
-  /** Ensures API always has the latest token */
+  /**
+   * Updates the API token and stores it in localStorage.
+   * 
+   * @param {string|null} newToken - New token to be set (or null to clear).
+   */
   static setToken(newToken) {
     if (newToken) {
       localStorage.setItem("token", newToken);
@@ -21,7 +29,15 @@ class TrailBlazerApi {
     }
   }
 
-  /** Sends API requests */
+  /**
+   * Sends an API request.
+   * 
+   * @param {string} endpoint - API route (e.g., "auth/token").
+   * @param {object} [data={}] - Data payload for requests.
+   * @param {string} [method="get"] - HTTP method.
+   * @returns {Promise<object>} - API response data.
+   * @throws {Error} - Throws an error if the request fails.
+   */
   static async request(endpoint, data = {}, method = "get") {
     console.debug("API Call:", method.toUpperCase(), endpoint, data);
 
@@ -42,10 +58,17 @@ class TrailBlazerApi {
     }
   }
 
-  /** Registers a new user */
+  // ======== AUTHENTICATION ROUTES =========
+
+  /**
+   * Registers a new user.
+   * 
+   * @param {object} registerInfo - User registration details.
+   * @returns {Promise<object>} - API response containing token.
+   */
   static async registerUser(registerInfo) {
     try {
-      let response = await this.request("auth/register", registerInfo, "post");
+      const response = await this.request("auth/register", registerInfo, "post");
       if (response.token) {
         console.log("[API] Registration successful, setting token.");
         this.setToken(response.token);
@@ -57,10 +80,15 @@ class TrailBlazerApi {
     }
   }
 
-  /** Logs in an existing user */
+  /**
+   * Logs in an existing user.
+   * 
+   * @param {object} loginInfo - User login credentials.
+   * @returns {Promise<object>} - API response containing token.
+   */
   static async loginUser(loginInfo) {
     try {
-      let response = await this.request("auth/token", loginInfo, "post");
+      const response = await this.request("auth/token", loginInfo, "post");
       if (response.token) {
         console.log("[API] Login successful, setting token.");
         this.setToken(response.token);
@@ -72,7 +100,11 @@ class TrailBlazerApi {
     }
   }
 
-  /** Fetches user details */
+  /**
+   * Fetches the logged-in user's details.
+   * 
+   * @returns {Promise<object|null>} - User details or null if not authenticated.
+   */
   static async getUserDetails() {
     if (!this.token) return null;
 
@@ -87,7 +119,9 @@ class TrailBlazerApi {
     }
   }
 
-  /** Logs out the user */
+  /**
+   * Logs out the user by clearing the token and redirecting to the homepage.
+   */
   static logoutUser() {
     console.log("[API] Logging out user.");
     this.setToken(null);
@@ -96,7 +130,11 @@ class TrailBlazerApi {
 
   // ======== TRIP ROUTES =========
 
-  /** Fetches all trips for the logged-in user */
+  /**
+   * Fetches all trips for the logged-in user.
+   * 
+   * @returns {Promise<Array>} - List of user's trips.
+   */
   static async getTrips() {
     try {
       console.log("[API] Fetching user trips...");
@@ -108,7 +146,12 @@ class TrailBlazerApi {
     }
   }
 
-  /** Creates a new trip for the logged-in user */
+  /**
+   * Creates a new trip.
+   * 
+   * @param {object} tripData - Details of the trip to create.
+   * @returns {Promise<object>} - Created trip details.
+   */
   static async createTrip(tripData) {
     try {
       console.log("[API] Creating trip:", tripData);
@@ -120,7 +163,12 @@ class TrailBlazerApi {
     }
   }
 
-  /** Fetches details of a specific trip */
+  /**
+   * Fetches details of a specific trip.
+   * 
+   * @param {number} tripId - ID of the trip.
+   * @returns {Promise<object>} - Trip details.
+   */
   static async getTripDetails(tripId) {
     try {
       console.log("[API] Fetching details for trip:", tripId);
@@ -132,7 +180,13 @@ class TrailBlazerApi {
     }
   }
 
-  /** Updates a trip */
+  /**
+   * Updates an existing trip.
+   * 
+   * @param {number} tripId - ID of the trip.
+   * @param {object} tripData - Updated trip details.
+   * @returns {Promise<object>} - Updated trip details.
+   */
   static async updateTrip(tripId, tripData) {
     try {
       console.log("[API] Updating trip:", tripId);
@@ -144,7 +198,12 @@ class TrailBlazerApi {
     }
   }
 
-  /** Deletes a trip */
+  /**
+   * Deletes a trip.
+   * 
+   * @param {number} tripId - ID of the trip.
+   * @returns {Promise<string>} - Deletion confirmation message.
+   */
   static async deleteTrip(tripId) {
     try {
       console.log("[API] Deleting trip with ID:", tripId);
@@ -158,28 +217,40 @@ class TrailBlazerApi {
 
   // ======== DESTINATIONS ROUTES =========
 
-  /** Fetches all destinations */
+  /**
+   * Fetches all destinations.
+   * 
+   * @returns {Promise<Array>} - List of available destinations.
+   */
   static async getAllDestinations() {
     return await this.request("destinations");
   }
 
-  /** Fetches a destination by country name */
+  /**
+   * Fetches details of a destination by country name.
+   * 
+   * @param {string} countryName - Country name.
+   * @returns {Promise<object>} - Destination details.
+   */
   static async getCountryDetails(countryName) {
     return await this.request(`destinations/country/${encodeURIComponent(countryName)}`);
   }
 
-  /** Fetches country suggestions based on user input */
-static async getCountrySuggestions(query) {
-  try {
-    const response = await this.request(`destinations/suggestions/${encodeURIComponent(query)}`);
-    return response.suggestions || [];
-  } catch (error) {
-    console.error("[API] Error fetching country suggestions:", error);
-    return [];
+  /**
+   * Fetches country suggestions based on user input.
+   * 
+   * @param {string} query - Partial country name for autocomplete.
+   * @returns {Promise<Array>} - List of suggested country names.
+   */
+  static async getCountrySuggestions(query) {
+    try {
+      const response = await this.request(`destinations/suggestions/${encodeURIComponent(query)}`);
+      return response.suggestions || [];
+    } catch (error) {
+      console.error("[API] Error fetching country suggestions:", error);
+      return [];
+    }
   }
-}
-
-
 }
 
 export default TrailBlazerApi;
