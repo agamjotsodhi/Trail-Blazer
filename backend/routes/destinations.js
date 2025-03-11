@@ -7,9 +7,14 @@ const Destination = require("../models/destination");
 
 const router = express.Router();
 
-// POST /destinations - Add or update a destination
-// Request body: { country: "Country Name" }
-// Response: { destination: { ...destinationDetails } }
+/**
+ * POST /destinations
+ * 
+ * Adds or updates a destination.
+ * 
+ * Request body: { country: "Country Name" }
+ * Response: { destination: { ...destinationDetails } }
+ */
 router.post("/", authenticateJWT, async (req, res, next) => {
   try {
     const { country } = req.body;
@@ -28,8 +33,13 @@ router.post("/", authenticateJWT, async (req, res, next) => {
   }
 });
 
-// GET /destinations/country/:country - Get destination details by country name
-// Response: { destination: { ...destinationDetails } }
+/**
+ * GET /destinations/country/:country
+ * 
+ * Retrieves destination details by country name.
+ * 
+ * Response: { destination: { ...destinationDetails } }
+ */
 router.get("/country/:country", authenticateJWT, async (req, res, next) => {
   try {
     const { country } = req.params;
@@ -48,8 +58,13 @@ router.get("/country/:country", authenticateJWT, async (req, res, next) => {
   }
 });
 
-// GET /destinations/suggestions/:query - Get country name suggestions based on user input
-// Response: { suggestions: ["Canada", "Cambodia", "Cameroon", ...] }
+/**
+ * GET /destinations/suggestions/:query
+ * 
+ * Retrieves country name suggestions based on user input.
+ * 
+ * Response: { suggestions: ["Canada", "Cambodia", "Cameroon", ...] }
+ */
 router.get("/suggestions/:query", authenticateJWT, async (req, res, next) => {
   try {
     const { query } = req.params;
@@ -68,8 +83,13 @@ router.get("/suggestions/:query", authenticateJWT, async (req, res, next) => {
   }
 });
 
-// GET /destinations - Get all destinations
-// Response: { destinations: [{ ...destinationDetails }, ...] }
+/**
+ * GET /destinations
+ * 
+ * Retrieves all destinations.
+ * 
+ * Response: { destinations: [{ ...destinationDetails }, ...] }
+ */
 router.get("/", authenticateJWT, async (req, res, next) => {
   try {
     console.log("[Destinations] Fetching all destinations...");

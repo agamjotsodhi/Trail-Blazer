@@ -13,7 +13,10 @@ const SELECT_FIELDS = `
 
 class Trip {
   /**
-   * ✅ Fetch all trips for a specific user.
+   * Retrieves all trips for a given user.
+   * 
+   * @param {number} user_id - The user's ID.
+   * @returns {Promise<Array<object>>} - List of trips.
    */
   static async getAll(user_id) {
     const result = await db.query(
@@ -24,13 +27,18 @@ class Trip {
   }
 
   /**
-   * ✅ Add a new trip.
+   * Creates a new trip and generates related data (destination, weather, itinerary).
+   * 
+   * @param {number} user_id - The user's ID.
+   * @param {object} tripData - Trip details.
+   * @returns {Promise<object>} - The created trip, destination details, weather forecast, and itinerary.
    */
   static async add(user_id, { trip_name, start_date, end_date, location_city, location_country, interests }) {
     if (!trip_name || !start_date || !end_date || !location_city || !location_country || !interests) {
       throw new BadRequestError("Missing required trip data.");
     }
 
+    // Prevent duplicate trip names for the same user
     const duplicateCheck = await db.query(
       `SELECT trip_id FROM trips WHERE user_id = $1 AND trip_name = $2`,
       [user_id, trip_name]
@@ -51,10 +59,11 @@ class Trip {
     const trip = tripResult.rows[0];
     console.log(`[Trip Model] Trip created: ${trip.trip_id}`);
 
-    // Fetch and store destination details
+    // Fetch related trip data
     const destination = await Destination.fetchDestinationSafely(location_country);
     const weather = await Weather.fetchWeatherDataSafely(trip.trip_id, { location_city, start_date, end_date });
 
+    // Generate itinerary with AI
     let itinerary;
     try {
       itinerary = await generateItinerary(location_city, location_country, interests, start_date, end_date);
@@ -64,13 +73,18 @@ class Trip {
       itinerary = "Itinerary could not be generated.";
     }
 
+    // Store itinerary in the database
     await db.query(`INSERT INTO itineraries (trip_id, itinerary) VALUES ($1, $2)`, [trip.trip_id, itinerary]);
 
     return { trip, destination, weather, itinerary };
   }
 
   /**
-   * ✅ Get a specific trip.
+   * Retrieves a specific trip with its details.
+   * 
+   * @param {number} trip_id - The trip's ID.
+   * @param {number} user_id - The user's ID.
+   * @returns {Promise<object>} - The trip details, destination info, weather data, and itinerary.
    */
   static async get(trip_id, user_id) {
     const tripResult = await db.query(
@@ -92,7 +106,12 @@ class Trip {
   }
 
   /**
-   * ✅ Update an existing trip.
+   * Updates an existing trip with new details.
+   * 
+   * @param {number} trip_id - The trip's ID.
+   * @param {number} user_id - The user's ID.
+   * @param {object} data - Updated trip details.
+   * @returns {Promise<object>} - The updated trip.
    */
   static async update(trip_id, user_id, data) {
     const { setCols, values } = sqlForPartialUpdate(data, {
@@ -121,7 +140,11 @@ class Trip {
   }
 
   /**
-   * ✅ Delete a trip.
+   * Deletes a trip.
+   * 
+   * @param {number} trip_id - The trip's ID.
+   * @param {number} user_id - The user's ID.
+   * @returns {Promise<object>} - Confirmation message.
    */
   static async remove(trip_id, user_id) {
     const result = await db.query(

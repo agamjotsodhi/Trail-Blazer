@@ -8,8 +8,14 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 
 // Handles user-related database operations
 class User {
-  // Authenticate user by checking username and password
-  // Returns user details if valid, otherwise throws UnauthorizedError
+  /**
+   * Authenticates a user by verifying username and password.
+   * 
+   * @param {string} username - The user's username.
+   * @param {string} password - The user's password.
+   * @returns {Promise<object>} - User details (excluding password).
+   * @throws {UnauthorizedError} - If credentials are invalid.
+   */
   static async authenticate(username, password) {
     const result = await db.query(
       `SELECT user_id, username, password, email, first_name
@@ -31,9 +37,15 @@ class User {
     throw new UnauthorizedError("Invalid username/password");
   }
 
-  // Register a new user
-  // Throws BadRequestError if username already exists
+  /**
+   * Registers a new user.
+   * 
+   * @param {object} userData - User details including username, email, password, and first name.
+   * @returns {Promise<object>} - Registered user details.
+   * @throws {BadRequestError} - If the username already exists.
+   */
   static async register({ username, email, password, first_name }) {
+    // Check if username is already taken
     const duplicateCheck = await db.query(
       `SELECT username FROM users WHERE username = $1`,
       [username]
@@ -43,6 +55,7 @@ class User {
       throw new BadRequestError(`Username already exists: ${username}`);
     }
 
+    // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
@@ -55,8 +68,13 @@ class User {
     return result.rows[0];
   }
 
-  // Get a user by username
-  // Throws NotFoundError if user does not exist
+  /**
+   * Retrieves user details by username.
+   * 
+   * @param {string} username - The user's username.
+   * @returns {Promise<object>} - User details.
+   * @throws {NotFoundError} - If the user does not exist.
+   */
   static async get(username) {
     const result = await db.query(
       `SELECT user_id, username, email, first_name
@@ -72,8 +90,15 @@ class User {
     return user;
   }
 
-  // Update user data
-  // Allowed fields: first_name, email, password
+  /**
+   * Updates user details. 
+   * Allowed fields: first_name, email, password.
+   * 
+   * @param {string} username - The user's username.
+   * @param {object} data - Fields to update.
+   * @returns {Promise<object>} - Updated user details.
+   * @throws {NotFoundError} - If the user does not exist.
+   */
   static async update(username, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
@@ -95,8 +120,12 @@ class User {
     return user;
   }
 
-  // Delete user by username
-  // Throws NotFoundError if user does not exist
+  /**
+   * Deletes a user by username.
+   * 
+   * @param {string} username - The user's username.
+   * @throws {NotFoundError} - If the user does not exist.
+   */
   static async remove(username) {
     const result = await db.query(
       `DELETE FROM users WHERE username = $1 RETURNING username`,

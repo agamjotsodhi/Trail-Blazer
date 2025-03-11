@@ -7,9 +7,14 @@ const { BadRequestError } = require("../expressError");
 
 const router = express.Router();
 
-// POST /weather/:trip_id - Fetch and store weather data for a trip
-// Request body: { location_city, start_date, end_date }
-// Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
+/**
+ * POST /weather/:trip_id
+ * 
+ * Fetches and stores weather data for a specific trip.
+ * 
+ * Request body: { location_city, start_date, end_date }
+ * Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
+ */
 router.post("/:trip_id", authenticateJWT, async (req, res, next) => {
   try {
     const trip_id = Number(req.params.trip_id);
@@ -30,8 +35,13 @@ router.post("/:trip_id", authenticateJWT, async (req, res, next) => {
   }
 });
 
-// GET /weather/:trip_id - Retrieve all weather records for a specific trip
-// Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
+/**
+ * GET /weather/:trip_id
+ * 
+ * Retrieves all weather records for a specific trip.
+ * 
+ * Response: [{ weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }]
+ */
 router.get("/:trip_id", authenticateJWT, async (req, res, next) => {
   try {
     const trip_id = Number(req.params.trip_id);
@@ -46,8 +56,13 @@ router.get("/:trip_id", authenticateJWT, async (req, res, next) => {
   }
 });
 
-// GET /weather/details/:weather_id - Retrieve a specific weather record by its ID
-// Response: { weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }
+/**
+ * GET /weather/details/:weather_id
+ * 
+ * Retrieves a specific weather record by its ID.
+ * 
+ * Response: { weather_id, trip_id, datetime, tempmax, tempmin, temp, humidity, precip, precipprob, snowdepth, windspeed, sunrise, sunset, conditions, description, icon }
+ */
 router.get("/details/:weather_id", authenticateJWT, async (req, res, next) => {
   try {
     const weather_id = Number(req.params.weather_id);

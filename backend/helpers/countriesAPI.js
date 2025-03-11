@@ -1,19 +1,18 @@
 "use strict";
 
 // helpers/countriesAPI.js
-
-// Handles all API requests to the Rest Countries API.
+// Manages API requests to the Rest Countries API using Axios.
 
 const axios = require("axios");
 
 const BASE_URL = "https://restcountries.com/v3.1";
 
 /**
- * Fetches country details by name.
+ * Retrieves country details by name.
  * 
- * @param {string} countryName - The name of the country (e.g., "Canada").
+ * @param {string} countryName - The country name (e.g., "Canada").
  * @returns {Promise<object>} - The country's data.
- * @throws {Error} - If the country is not found or an error occurs.
+ * @throws {Error} - If no match is found or an API error occurs.
  */
 async function getCountry(countryName) {
   if (!countryName?.trim()) {
@@ -30,7 +29,7 @@ async function getCountry(countryName) {
 }
 
 /**
- * Fetches a list of all countries.
+ * Retrieves a complete list of all countries.
  * 
  * @returns {Promise<Array<object>>} - An array of country data.
  */
@@ -44,7 +43,7 @@ async function getAllCountries() {
 }
 
 /**
- * Searches for countries by partial name (for autocomplete).
+ * Searches for countries by partial name (useful for autocomplete).
  * 
  * @param {string} partialName - The beginning of a country’s name (e.g., "Can").
  * @returns {Promise<Array<object>>} - A list of matching countries.
@@ -63,10 +62,10 @@ async function searchCountries(partialName) {
 }
 
 /**
- * Formats country data for database insertion.
+ * Extracts and formats country data for structured storage.
  * 
- * @param {object} country - Country data from the API.
- * @returns {object} - A structured country details object.
+ * @param {object} country - Raw country data from the API.
+ * @returns {object} - Processed country details.
  */
 function prepareCountryDetails(country) {
   return {

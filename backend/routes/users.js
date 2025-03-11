@@ -9,10 +9,15 @@ const userUpdateSchema = require("../schemas/userUpdate.json");
 
 const router = express.Router();
 
-// GET /:username - Get user details
-// Response: { username, first_name, email }
-// Authorization: User must be logged in and match the requested username
-router.get("/:username", ensureCorrectUser, async function (req, res, next) {
+/**
+ * GET /:username
+ * 
+ * Retrieves user details.
+ * 
+ * Response: { user: { username, first_name, email } }
+ * Authorization: User must be logged in and match the requested username.
+ */
+router.get("/:username", ensureCorrectUser, async (req, res, next) => {
   try {
     const user = await User.get(req.params.username);
     return res.json({ user });
@@ -21,16 +26,20 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-// PATCH /:username - Update user profile
-// Request body: { first_name, email, password }
-// Response: { username, first_name, email }
-// Authorization: User must be logged in and match the requested username
-router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
+/**
+ * PATCH /:username
+ * 
+ * Updates user profile details.
+ * 
+ * Request body: { first_name, email, password }
+ * Response: { user: { username, first_name, email } }
+ * Authorization: User must be logged in and match the requested username.
+ */
+router.patch("/:username", ensureCorrectUser, async (req, res, next) => {
   try {
     const validator = jsonschema.validate(req.body, userUpdateSchema);
     if (!validator.valid) {
-      const errs = validator.errors.map((e) => e.stack);
-      throw new BadRequestError(errs);
+      throw new BadRequestError(validator.errors.map((e) => e.stack));
     }
 
     const updatedUser = await User.update(req.params.username, req.body);
@@ -40,10 +49,15 @@ router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-// DELETE /:username - Delete user account
-// Response: { deleted: username }
-// Authorization: User must be logged in and match the requested username
-router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
+/**
+ * DELETE /:username
+ * 
+ * Deletes a user account.
+ * 
+ * Response: { deleted: username }
+ * Authorization: User must be logged in and match the requested username.
+ */
+router.delete("/:username", ensureCorrectUser, async (req, res, next) => {
   try {
     await User.remove(req.params.username);
     return res.json({ deleted: req.params.username });

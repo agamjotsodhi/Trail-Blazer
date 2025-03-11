@@ -18,30 +18,50 @@ const userRoutes = require("./routes/users");
 
 const app = express();
 
-// FIXED: CORS CONFIGURATION
+/**
+ * CORS Configuration
+ * 
+ * - Allows requests from the frontend at the specified origin.
+ * - Supports common HTTP methods.
+ * - Enables credentials for JWT authentication & cookies.
+ */
 const corsOptions = {
-  origin: "https://trailblazer-trip-planning.onrender.com", // frontend deployment URL
+  origin: "https://trailblazer-trip-planning.onrender.com", // Frontend deployment URL
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true, // Allows JWT authentication & cookies
+  credentials: true, 
 };
 
-app.use(cors(corsOptions)); // Apply CORS with the correct settings
+app.use(cors(corsOptions)); // Apply CORS settings
 app.use(express.json()); // Parse JSON request bodies
 app.use(authenticateJWT); // JWT authentication middleware
 
-// Route handlers
-app.use("/auth", authRoutes); // Authentication routes
-app.use("/trips", tripsRoutes); // Trip-related routes
-app.use("/destinations", destinationsRoutes); // Destination-related routes
-app.use("/weather", weatherRoutes); // Weather-related routes
-app.use("/users", userRoutes); // User-related routes 
+/**
+ * Route Handlers
+ * 
+ * - /auth: Authentication routes
+ * - /trips: Trip management
+ * - /destinations: Destination details & search
+ * - /weather: Weather data retrieval
+ * - /users: User profile management
+ */
+app.use("/auth", authRoutes);
+app.use("/trips", tripsRoutes);
+app.use("/destinations", destinationsRoutes);
+app.use("/weather", weatherRoutes);
+app.use("/users", userRoutes);
 
-// Catch-all for undefined routes
+/**
+ * Catch-all for undefined routes
+ */
 app.use((req, res, next) => {
   return next(new NotFoundError());
 });
 
-// Global error handler
+/**
+ * Global error handler
+ * 
+ * - Returns JSON response with error message and status code.
+ */
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message;

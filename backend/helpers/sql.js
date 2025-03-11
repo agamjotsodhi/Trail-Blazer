@@ -1,5 +1,7 @@
 "use strict";
 
+// helpers/sql.js
+
 const { BadRequestError } = require("../expressError");
 
 /**

@@ -5,7 +5,17 @@ const { fetchWeather } = require("../helpers/weatherAPI");
 const { BadRequestError, NotFoundError } = require("../expressError");
 
 class Weather {
-  // Fetch weather data from the API and store it in the database
+  /**
+   * Fetches weather data from the API and stores it in the database.
+   * 
+   * @param {number} trip_id - The trip's ID.
+   * @param {object} params - Weather request parameters.
+   * @param {string} params.location_city - The city for the weather forecast.
+   * @param {string} params.start_date - Trip start date (YYYY-MM-DD).
+   * @param {string} params.end_date - Trip end date (YYYY-MM-DD).
+   * @returns {Promise<Array<object>>} - Stored weather records.
+   * @throws {BadRequestError} - If required parameters are missing or API returns no data.
+   */
   static async add(trip_id, { location_city, start_date, end_date }) {
     if (!trip_id || !location_city || !start_date || !end_date) {
       throw new BadRequestError("Trip ID, city name, start date, and end date are required.");
@@ -13,11 +23,11 @@ class Weather {
 
     console.log(`[Weather] Fetching data for ${location_city} (${start_date} - ${end_date})`);
 
-    // Get weather data from the API
+    // Retrieve weather data from API
     const weatherData = await fetchWeather(location_city, start_date, end_date);
     if (!weatherData?.length) throw new BadRequestError("No valid weather data returned.");
 
-    // Store weather data in the database
+    // Insert weather records into the database
     const insertPromises = weatherData.map(day =>
       db.query(
         `INSERT INTO weather 
@@ -50,7 +60,13 @@ class Weather {
     return results.map(res => res.rows[0]);
   }
 
-  // Get all weather records for a specific trip
+  /**
+   * Retrieves all weather records for a specific trip.
+   * 
+   * @param {number} trip_id - The trip's ID.
+   * @returns {Promise<Array<object>>} - List of weather records.
+   * @throws {NotFoundError} - If no weather data is found.
+   */
   static async getAllForTrip(trip_id) {
     const result = await db.query(
       `SELECT * FROM weather WHERE trip_id = $1 ORDER BY datetime ASC`,
@@ -62,7 +78,13 @@ class Weather {
     return result.rows;
   }
 
-  // Get a single weather record by its ID
+  /**
+   * Retrieves a specific weather record by its ID.
+   * 
+   * @param {number} weather_id - The weather record's ID.
+   * @returns {Promise<object>} - Weather details.
+   * @throws {NotFoundError} - If no weather record is found.
+   */
   static async get(weather_id) {
     const result = await db.query(
       `SELECT * FROM weather WHERE weather_id = $1`,
@@ -74,7 +96,13 @@ class Weather {
     return result.rows[0];
   }
 
-  // Fetch and store weather data while handling errors gracefully
+  /**
+   * Safely fetches and stores weather data, handling errors gracefully.
+   * 
+   * @param {number} trip_id - The trip's ID.
+   * @param {object} params - Weather request parameters.
+   * @returns {Promise<Array<object>|object>} - Stored weather records or an error message.
+   */
   static async fetchWeatherDataSafely(trip_id, params) {
     try {
       return await this.add(trip_id, params);
