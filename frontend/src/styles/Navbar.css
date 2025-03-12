@@ -5,12 +5,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  /* position: fixed; */
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Navbar Hover Effect - Slight Glow */
+.navbar:hover {
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.3);
 }
 
 /* Navbar Logo */
 .navbar-logo img {
   height: 50px;
+  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+/* Logo Hover Effect */
+.navbar-logo img:hover {
+  transform: scale(1.08);
+  filter: brightness(1.2);
 }
 
 /* Navigation Links */
@@ -18,37 +35,60 @@
   margin-right: 20px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 /* Individual Link Styling */
 .nav-link {
   text-decoration: none;
-  font-size: 15px;
+  font-size: 16px;
   color: #ececec;
   font-weight: bold;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: color 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Hover Effects */
+.nav-link:hover {
+  color: rgb(129, 156, 255);
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+  box-shadow: 0px 4px 12px rgba(129, 156, 255, 0.2);
 }
 
 /* Icon Styling */
 .nav-icon {
   font-size: 20px;
   color: rgb(129, 156, 255);
+  transition: color 0.3s ease-in-out;
 }
 
-/* Hover Effects */
-.nav-link:hover {
+/* Icon Hover Effect */
+.nav-link:hover .nav-icon {
   color: rgb(93, 113, 183);
 }
 
+/* Logout Button */
 .logout-btn {
   background: transparent;
-  border: none;
+  border: 2px solid rgba(232, 237, 255, 0.5);
   color: rgb(232, 237, 255);
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Logout Button Hover Effect */
+.logout-btn:hover {
+  background: rgba(232, 237, 255, 0.15);
+  border-color: rgba(232, 237, 255, 0.8);
+  transform: scale(1.05);
+  box-shadow: 0px 4px 12px rgba(232, 237, 255, 0.3);
 }
