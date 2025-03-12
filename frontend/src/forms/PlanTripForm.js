@@ -1,60 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/forms.css"; // Main form styling
-import "../styles/PlanTrip.css"; // Additional styling for layout adjustments
+import Select from "react-select"; // Import react-select for dropdowns
+import { Country, City } from "country-state-city"; // Import country & city functions
+import "../styles/forms.css";
+import "../styles/PlanTrip.css";
 
-/**
- * PlanTripForm
- * 
- * Allows users to create a new trip by entering trip details.
- * 
- * Props:
- * - createTrip: Function to handle trip creation.
- */
 const PlanTripForm = ({ createTrip }) => {
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format.
+  const today = new Date().toISOString().split("T")[0];
 
-  // Initial state for trip details
   const [tripData, setTripData] = useState({
     trip_name: "",
-    start_date: today, // Default to today's date
+    start_date: today,
     end_date: "",
-    location_city: "",
     location_country: "",
+    location_city: "",
     interests: "",
   });
 
-  const [message, setMessage] = useState(""); // Stores success or error messages
-  const [isSubmitting, setIsSubmitting] = useState(false); // Prevents multiple submissions
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  /**
-   * Handles input field changes and updates state.
-   * 
-   * @param {Event} e - The input change event.
-   */
+  const [countries, setCountries] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  useEffect(() => {
+    const countryList = Country.getAllCountries().map((country) => ({
+      value: country.isoCode,
+      label: country.name,
+    }));
+    setCountries(countryList);
+  }, []);
+
+  // Handle Country Selection
+  const handleCountryChange = (selectedOption) => {
+    const countryName = selectedOption ? selectedOption.label : "";
+    setTripData((prevData) => ({
+      ...prevData,
+      location_country: countryName,
+      location_city: "",
+    }));
+
+    // Fetch cities based on selected country or reset cities if cleared
+    if (selectedOption) {
+      const cityList = City.getCitiesOfCountry(selectedOption.value).map((city) => ({
+        value: city.name,
+        label: city.name,
+      }));
+      setCities(cityList);
+    } else {
+      setCities([]); // Clear city list if country is cleared
+    }
+  };
+
+  // Handle City Selection
+  const handleCityChange = (selectedOption) => {
+    const cityName = selectedOption ? selectedOption.label : "";
+    setTripData((prevData) => ({
+      ...prevData,
+      location_city: cityName,
+    }));
+  };
+
   const handleChange = (e) => {
     setTripData({ ...tripData, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Handles form submission to create a new trip.
-   * 
-   * @param {Event} e - Form submission event.
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return; // Prevent multiple submissions
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     try {
       const newTrip = await createTrip(tripData);
       setMessage(`Trip "${newTrip.trip_name}" successfully created!`);
-      navigate(`/trips/${newTrip.trip_id}`); // Redirect to trip details page
+      navigate(`/trips/${newTrip.trip_id}`);
     } catch (err) {
       console.error("Error creating trip:", err);
       setMessage("Failed to create trip.");
-      setIsSubmitting(false); // Re-enable button if submission fails
+      setIsSubmitting(false);
     }
   };
 
@@ -84,7 +108,7 @@ const PlanTripForm = ({ createTrip }) => {
             value={tripData.start_date}
             onChange={handleChange}
             required
-            min={today} // Prevents past dates
+            min={today}
           />
         </div>
 
@@ -97,33 +121,30 @@ const PlanTripForm = ({ createTrip }) => {
             value={tripData.end_date}
             onChange={handleChange}
             required
-            min={tripData.start_date || today} // Ensures end date is after start date
+            min={tripData.start_date || today}
           />
         </div>
 
-        {/* Country */}
+        {/* Country - Autocomplete Dropdown */}
         <div className="form-group">
           <label>Country</label>
-          <input
-            type="text"
-            name="location_country"
-            placeholder="e.g. France"
-            value={tripData.location_country}
-            onChange={handleChange}
-            required
+          <Select
+            options={countries}
+            onChange={handleCountryChange}
+            placeholder="Select a country"
+            isClearable
           />
         </div>
 
-        {/* City */}
+        {/* City - Autocomplete Dropdown */}
         <div className="form-group">
           <label>City</label>
-          <input
-            type="text"
-            name="location_city"
-            placeholder="e.g. Paris"
-            value={tripData.location_city}
-            onChange={handleChange}
-            required
+          <Select
+            options={cities}
+            onChange={handleCityChange}
+            placeholder="Select a city"
+            isClearable
+            isDisabled={!tripData.location_country} // Disable until a country is selected
           />
         </div>
 
@@ -144,7 +165,6 @@ const PlanTripForm = ({ createTrip }) => {
           {isSubmitting ? "Creating..." : "Create Trip"}
         </button>
 
-        {/* Display success/error message */}
         {message && <p className="form-message">{message}</p>}
       </form>
     </div>
